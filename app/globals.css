@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --text-color: #000000;
+  --text-secondary: #989898;
+  --background: #ffffff;
+  --card-bg: #f1f1f1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: #ffffff;
+    --text-secondary: #989898;
+    --background: #000000;
+    --card-bg: #242424;
+  }
+}
+
+body {
+  color: var(--text-color);
+  background: var(--background);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Add custom styles for the container of the selects */
+.select-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Custom styles for the labels */
+.select-label {
+  color: var(--text-color); /* White text */
+  margin-right: 0.5rem; /* Space between label and select */
+}
+
+/* You might need to add custom styles for the focus state */
+.custom-select:focus {
+  outline: none;
+  border-color: #aaa; /* Highlighted border color */
+}
+
+.workout-list {
+  padding: 1rem;
+}
+
+.exercise-title {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.rest {
+  margin-bottom: 1rem;
+}
+
+.rounds, .rest, .reps {
+  color: var(--text-secondary);
+}
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+#week-selector {
+  border-right: 1px solid var(--background);
+}
+
+.selector {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.custom-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  width: 100%;
+  padding: 1rem 1rem;
+  font-size: 1rem; /* Adjust the font-size accordingly */
+  cursor: pointer;
+}
+
+.selector::after {
+  font-family: 'FontAwesome';
+  content: '\f078'; /* FontAwesome chevron-down */
+  color: #444; /* Icon color */
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: .8rem;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+  position: relative;
+  max-width: 500px; 
+  width: 90%;
+}
+
+.exercise-header {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.play-button {
+  font-size: 2rem;
+}

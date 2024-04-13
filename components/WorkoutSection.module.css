@@ -1,0 +1,65 @@
+.workoutSection {
+    background-color: var(--card-bg);
+    /* Dark background */
+    color: var(--text-color);
+    /* White text */
+    margin: 0.5rem 0;
+    /* Spacing between sections */
+    border-radius: 4px;
+    /* Rounded corners */
+    overflow: hidden;
+    /* Prevent content from spilling outside the border */
+}
+
+.button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+    /* Padding inside the button */
+    cursor: pointer;
+    /* Change cursor on hover */
+    background: none;
+    /* No background for the button */
+    border: none;
+    /* No border for the button */
+    outline: none;
+    /* Remove focus outline */
+}
+
+.title {
+    font-weight: bold;
+    /* Bold title */
+}
+
+.arrow {
+    /* Initial arrow style */
+    font-size: 1rem;
+    /* Larger arrow */
+    transition: transform 0.3s;
+    /* Smooth transition for rotation */
+}
+
+.arrow.open {
+    transform: rotate(180deg);
+    /* Rotate arrow when open */
+}
+
+.content {
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    max-height: 0; /* Start with max-height at 0 */
+  }  
+
+.exercise {
+    padding: .2rem 1rem;
+    /* Spacing between exercises */
+}
+
+.details {
+    font-size: 0.875rem;
+    /* Smaller font size for details */
+    padding-top: 0.25rem;
+    /* Spacing above details */
+}
