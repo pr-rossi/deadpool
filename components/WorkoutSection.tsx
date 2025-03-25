@@ -4,17 +4,20 @@ import { faChevronUp, faChevronDown, faCirclePlay } from '@fortawesome/free-soli
 import styles from './WorkoutSection.module.css';
 import Modal from './Modal';
 
-interface ExerciseRecord {
-    Exercises?: string;
-    Rounds?: number;
-    Reps?: string;
-    Rest?: number;
-    Video?: { url: string }[];
+interface Exercise {
+    id: string;
+    fields: {
+        Exercises?: string;
+        Rounds?: number;
+        Reps?: string;
+        Rest?: number;
+        Video?: { url: string }[];
+    };
 }
 
 interface WorkoutSectionProps {
     groupTitle: string;
-    exercises: ExerciseRecord[];
+    exercises: Exercise[];
     isOpen: boolean;
     onClick: () => void;
 }
@@ -52,11 +55,11 @@ const WorkoutSection: React.FC<WorkoutSectionProps> = ({
                 />
             </button>
             <div ref={contentRef} className={styles.content}>
-                {exercises.map((exercise, index) => (
-                    <div key={index} className={styles.exercise}>
+                {exercises.map((exercise) => (
+                    <div key={exercise.id} className={styles.exercise}>
                         <div className={styles.exerciseHeader}>
-                            <div className={styles.exerciseTitle}>{exercise.Exercises || "No Exercise Listed"}</div>
-                            {exercise.Video && exercise.Video.map((video, vidIndex) => (
+                            <div className={styles.exerciseTitle}>{exercise.fields.Exercises || "No Exercise Listed"}</div>
+                            {exercise.fields.Video && exercise.fields.Video.map((video, vidIndex) => (
                                 <button 
                                     key={vidIndex} 
                                     onClick={() => handleVideoOpen(video.url)} 
@@ -67,9 +70,9 @@ const WorkoutSection: React.FC<WorkoutSectionProps> = ({
                             ))}
                         </div>
                         <div className={styles.details}>
-                            <div>Rounds: {exercise.Rounds !== undefined ? exercise.Rounds : "N/A"}</div>
-                            <div>Reps: {exercise.Reps || "N/A"}</div>
-                            <div>Rest: {exercise.Rest || "N/A"} min</div>
+                            <div>Rounds: {exercise.fields.Rounds !== undefined ? exercise.fields.Rounds : "N/A"}</div>
+                            <div>Reps: {exercise.fields.Reps || "N/A"}</div>
+                            <div>Rest: {exercise.fields.Rest || "N/A"} min</div>
                         </div>
                     </div>
                 ))}

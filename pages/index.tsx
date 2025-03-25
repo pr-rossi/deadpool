@@ -4,7 +4,7 @@ import Airtable, { Table, Records, FieldSet } from 'airtable';
 import WorkoutSection from '../components/WorkoutSection';
 import Modal from '../components/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlay, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faCirclePlay, faChevronRight, faChevronLeft, faCheck } from '@fortawesome/free-solid-svg-icons';
 
 interface ExerciseRecord extends FieldSet {
     [key: string]: any;  // Ensuring compliance with FieldSet
@@ -16,27 +16,43 @@ interface ExerciseRecord extends FieldSet {
     Reps?: string;
     Rest?: number;
     Notes?: string;
-  }
-  
-  interface Exercise {
+    id?: string;
+}
+
+interface Exercise {
     id: string;
     fields: ExerciseRecord;
-  }
-  
-  interface HomePageProps {
+}
+
+interface HomePageProps {
     workoutData: Exercise[];
-  }
+}
 
 const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
   const [selectedWorkoutWeek, setSelectedWorkoutWeek] = useState<string>('');
   const [selectedWorkoutDay, setSelectedWorkoutDay] = useState<string>('');
   const [uniqueWorkoutWeeks, setUniqueWorkoutWeeks] = useState<string[]>([]);
   const [uniqueWorkoutDays, setUniqueWorkoutDays] = useState<string[]>([]);
-  const [groupedExercises, setGroupedExercises] = useState<{ [key: string]: ExerciseRecord[] }>({});
+  const [groupedExercises, setGroupedExercises] = useState<{ [key: string]: Exercise[] }>({});
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [step, setStep] = useState<'week' | 'day' | 'workout' | 'exercise'>('week');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState('');
+  const [completedExercises, setCompletedExercises] = useState<Set<string>>(() => {
+    // Load completed exercises from localStorage on initial render
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('completedExercises');
+      if (saved) {
+        return new Set(JSON.parse(saved));
+      }
+    }
+    return new Set();
+  });
+
+  // Save completed exercises to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('completedExercises', JSON.stringify(Array.from(completedExercises)));
+  }, [completedExercises]);
 
   useEffect(() => {
     const workoutWeeks = Array.from(new Set(workoutData.map(item => item.fields.WorkoutWeek).filter(week => week !== undefined))) as string[];
@@ -49,9 +65,9 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
 
       const grouped = filteredByDay
         .filter(record => record.fields.Group !== undefined)  // Filter out records without a Group
-        .reduce<{ [key: string]: ExerciseRecord[] }>((acc, cur) => {
-            const groupKey = cur.fields.Group as string;  // Now it's safe to cast, since we filtered
-            (acc[groupKey] = acc[groupKey] || []).push(cur.fields);
+        .reduce<{ [key: string]: Exercise[] }>((acc, cur) => {  // Change ExerciseRecord[] to Exercise[]
+            const groupKey = cur.fields.Group as string;
+            (acc[groupKey] = acc[groupKey] || []).push(cur);  // Push the entire Exercise object
             return acc;
         }, {});
 
@@ -110,6 +126,42 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     }
   };
 
+  const handleExerciseComplete = (exerciseId: string) => {
+    setCompletedExercises(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(exerciseId)) {
+        newSet.delete(exerciseId);
+      } else {
+        newSet.add(exerciseId);
+      }
+      return newSet;
+    });
+  };
+
+  const isGroupCompleted = (groupExercises: Exercise[]) => {  // Update type to Exercise[]
+    return groupExercises.every(exercise => completedExercises.has(exercise.id));
+  };
+
+  const isDayCompleted = (day: string) => {
+    const dayExercises = workoutData.filter(
+      data => data.fields.WorkoutWeek === selectedWorkoutWeek && data.fields.WorkoutDay === day
+    );
+    return dayExercises.length > 0 && dayExercises.every(exercise => completedExercises.has(exercise.id));
+  };
+
+  const isWeekCompleted = (week: string) => {
+    const weekExercises = workoutData.filter(data => data.fields.WorkoutWeek === week);
+    return weekExercises.length > 0 && weekExercises.every(exercise => completedExercises.has(exercise.id));
+  };
+
+  // Add function to reset progress
+  const resetProgress = () => {
+    if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+      setCompletedExercises(new Set());
+      localStorage.removeItem('completedExercises');
+    }
+  };
+
   if (step === 'exercise' && selectedExercise && groupedExercises[selectedExercise]) {
     const exercises = groupedExercises[selectedExercise];
     const isLastExercise = !getNextExercise();
@@ -119,17 +171,25 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
         <h1 className="title">{selectedExercise}</h1>
         <div className="exercise-details">
           {exercises.map((exercise, index) => (
-            <div key={index} className="exercise-item">
-              <h2 className="exercise-name">{exercise.Exercises}</h2>
-              <div className="exercise-info">
-                <p>Rounds: {exercise.Rounds}</p>
-                <p>Reps: {exercise.Reps}</p>
-                <p>Rest: {exercise.Rest} min</p>
+            <div key={exercise.id} className="exercise-item">
+              <div className="exercise-header">
+                <h2 className="exercise-name">{exercise.fields.Exercises}</h2>
+                <button 
+                  className={`complete-button ${completedExercises.has(exercise.id) ? 'completed' : ''}`}
+                  onClick={() => handleExerciseComplete(exercise.id)}
+                >
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
               </div>
-              {exercise.Video && exercise.Video[0] && (
+              <div className="exercise-info">
+                <p>Rounds: {exercise.fields.Rounds}</p>
+                <p>Reps: {exercise.fields.Reps}</p>
+                <p>Rest: {exercise.fields.Rest} min</p>
+              </div>
+              {exercise.fields.Video && exercise.fields.Video[0] && (
                 <button 
                   className="watch-button"
-                  onClick={() => handleVideoOpen(exercise.Video![0].url)}
+                  onClick={() => handleVideoOpen(exercise.fields.Video![0].url)}
                 >
                   Watch example
                   <FontAwesomeIcon icon={faCirclePlay} />
@@ -163,11 +223,16 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
           {Object.entries(groupedExercises).map(([groupName, exercises]) => (
             <button
               key={groupName}
-              className="list-item-v2"
+              className={`list-item-v2 ${isGroupCompleted(exercises) ? 'completed' : ''}`}
               onClick={() => handleExerciseSelect(groupName)}
             >
               <span className="item-text-v2">{groupName}</span>
-              <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+              <div className="button-indicators">
+                {isGroupCompleted(exercises) && (
+                  <FontAwesomeIcon icon={faCheck} className="check-icon" />
+                )}
+                <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+              </div>
             </button>
           ))}
         </div>
@@ -190,14 +255,22 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
             .map(week => (
               <button
                 key={week}
-                className="list-item-v2"
+                className={`list-item-v2 ${isWeekCompleted(week) ? 'completed' : ''}`}
                 onClick={() => handleWeekSelect(week)}
               >
-                <span className="item-text-v2">{week}</span>
-                <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+                <span className="item-text-v2">Week {week}</span>
+                <div className="button-indicators">
+                  {isWeekCompleted(week) && (
+                    <FontAwesomeIcon icon={faCheck} className="check-icon" />
+                  )}
+                  <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+                </div>
               </button>
             ))}
         </div>
+        <button className="reset-button" onClick={resetProgress}>
+          Reset Progress
+        </button>
       </div>
     );
   }
@@ -212,11 +285,16 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
             .map(day => (
               <button
                 key={day}
-                className="list-item-v2"
+                className={`list-item-v2 ${isDayCompleted(day) ? 'completed' : ''}`}
                 onClick={() => handleDaySelect(day)}
               >
-                <span className="item-text-v2">{day}: {day === '1' ? 'Legs' : day === '2' ? 'Chest' : day === '3' ? 'Arm Day' : day === '4' ? 'Back Day' : 'Shoulders & Abs'}</span>
-                <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+                <span className="item-text-v2">Day {day}: {day === '1' ? 'Legs' : day === '2' ? 'Chest' : day === '3' ? 'Arm Day' : day === '4' ? 'Back Day' : 'Shoulders & Abs'}</span>
+                <div className="button-indicators">
+                  {isDayCompleted(day) && (
+                    <FontAwesomeIcon icon={faCheck} className="check-icon" />
+                  )}
+                  <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+                </div>
               </button>
             ))}
         </div>
@@ -237,7 +315,7 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
           <WorkoutSection
             key={groupName}
             groupTitle={groupName}
-            exercises={exercises.filter(e => e.Exercises !== undefined)}
+            exercises={exercises.filter(e => e.fields.Exercises !== undefined)}
             isOpen={selectedExercise === groupName}
             onClick={() => handleExerciseSelect(groupName)}
           />
