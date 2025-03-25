@@ -154,6 +154,14 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     return weekExercises.length > 0 && weekExercises.every(exercise => completedExercises.has(exercise.id));
   };
 
+  const getWeekProgress = (week: string): number => {
+    const weekExercises = workoutData.filter(data => data.fields.WorkoutWeek === week);
+    if (weekExercises.length === 0) return 0;
+    
+    const completedCount = weekExercises.filter(exercise => completedExercises.has(exercise.id)).length;
+    return Math.round((completedCount / weekExercises.length) * 100);
+  };
+
   // Add function to reset progress
   const resetProgress = () => {
     if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
@@ -252,21 +260,29 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
         <div className="list-container-v2">
           {uniqueWorkoutWeeks
             .sort((a, b) => parseInt(a) - parseInt(b))
-            .map(week => (
-              <button
-                key={week}
-                className={`list-item-v2 ${isWeekCompleted(week) ? 'completed' : ''}`}
-                onClick={() => handleWeekSelect(week)}
-              >
-                <span className="item-text-v2">{week}</span>
-                <div className="button-indicators">
-                  {isWeekCompleted(week) && (
-                    <FontAwesomeIcon icon={faCheck} className="check-icon" />
-                  )}
-                  <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
-                </div>
-              </button>
-            ))}
+            .map(week => {
+              const progress = getWeekProgress(week);
+              return (
+                <button
+                  key={week}
+                  className={`list-item-v2 ${isWeekCompleted(week) ? 'completed' : ''}`}
+                  onClick={() => handleWeekSelect(week)}
+                >
+                  <span className="item-text-v2">Week {week}</span>
+                  <div className="button-indicators">
+                    {progress > 0 && (
+                      <div className="progress-indicator">
+                        <span className="progress-text">{progress}%</span>
+                      </div>
+                    )}
+                    {isWeekCompleted(week) && (
+                      <FontAwesomeIcon icon={faCheck} className="check-icon" />
+                    )}
+                    <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+                  </div>
+                </button>
+              );
+            })}
         </div>
         <button className="reset-button" onClick={resetProgress}>
           Reset Progress

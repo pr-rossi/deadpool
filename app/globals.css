@@ -23,6 +23,7 @@ body {
   font-size: 1.5rem;
   font-weight: 500;
   margin-bottom: 1.5rem;
+  margin-top: 2rem;
   color: #fff;
 }
 
@@ -226,4 +227,21 @@ body {
 
 .reset-button:hover {
   background: rgba(255, 59, 48, 0.2);
+}
+
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(48, 209, 88, 0.1);
+  border: 2px solid #30D158;
+}
+
+.progress-text {
+  color: #30D158;
+  font-size: 0.5rem;
+  font-weight: 500;
 } 
