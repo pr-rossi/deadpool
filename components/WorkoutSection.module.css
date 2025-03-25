@@ -1,7 +1,7 @@
 .workoutSection {
-    background-color: var(--card-bg);
+    background-color: #2d2d2d;
     /* Dark background */
-    color: var(--text-color);
+    color: white;
     /* White text */
     margin: 0.5rem 0;
     /* Spacing between sections */
@@ -26,6 +26,7 @@
     /* No border for the button */
     outline: none;
     /* Remove focus outline */
+    color: white;
 }
 
 .title {
@@ -39,6 +40,7 @@
     /* Larger arrow */
     transition: transform 0.3s;
     /* Smooth transition for rotation */
+    color: #ffffff;
 }
 
 .arrow.open {
@@ -50,16 +52,45 @@
     overflow: hidden;
     transition: max-height 0.3s ease-in-out;
     max-height: 0; /* Start with max-height at 0 */
-  }  
+}
 
 .exercise {
-    padding: .2rem 1rem;
+    padding: 1rem;
+    border-top: 1px solid #444;
     /* Spacing between exercises */
+}
+
+.exerciseHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.exerciseTitle {
+    font-weight: 500;
+    color: white;
+    margin-right: 10px;
+}
+
+.playButton {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 5px;
+    width: 2.5rem;
+    height: 2.5rem;
 }
 
 .details {
     font-size: 0.875rem;
     /* Smaller font size for details */
+    color: #a0aec0;
     padding-top: 0.25rem;
     /* Spacing above details */
 }
+
+.details > div {
+    margin: 5px 0;
+} 

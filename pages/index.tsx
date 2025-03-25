@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { GetStaticProps, NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import Airtable, { Table, Records, FieldSet } from 'airtable';
 import WorkoutSection from '../components/WorkoutSection';
+import Modal from '../components/Modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCirclePlay, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
 interface ExerciseRecord extends FieldSet {
     [key: string]: any;  // Ensuring compliance with FieldSet
@@ -30,7 +33,10 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
   const [uniqueWorkoutWeeks, setUniqueWorkoutWeeks] = useState<string[]>([]);
   const [uniqueWorkoutDays, setUniqueWorkoutDays] = useState<string[]>([]);
   const [groupedExercises, setGroupedExercises] = useState<{ [key: string]: ExerciseRecord[] }>({});
-  const [openSectionId, setOpenSectionId] = useState<string | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const [step, setStep] = useState<'week' | 'day' | 'workout' | 'exercise'>('week');
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState('');
 
   useEffect(() => {
     const workoutWeeks = Array.from(new Set(workoutData.map(item => item.fields.WorkoutWeek).filter(week => week !== undefined))) as string[];
@@ -53,56 +59,198 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     }
   }, [selectedWorkoutWeek, selectedWorkoutDay, workoutData]);
 
-  const handleWeekChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedWorkoutWeek(event.target.value);
-    setSelectedWorkoutDay('');
+  const handleWeekSelect = (week: string) => {
+    setSelectedWorkoutWeek(week);
+    setStep('day');
   };
 
-  const handleDayChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedWorkoutDay(event.target.value);
+  const handleDaySelect = (day: string) => {
+    setSelectedWorkoutDay(day);
+    setStep('workout');
   };
 
-  const handleSectionClick = (groupId: string) => {
-    setOpenSectionId(openSectionId === groupId ? null : groupId);
+  const handleBack = () => {
+    if (step === 'workout') {
+      setStep('day');
+      setSelectedWorkoutDay('');
+      setGroupedExercises({});
+    } else if (step === 'day') {
+      setStep('week');
+      setSelectedWorkoutWeek('');
+    }
   };
 
-  return (
-    <div className="">
-      <div className="select-container">
-        <div className="selector">
-          <select id="week-selector" value={selectedWorkoutWeek} onChange={handleWeekChange} className="custom-select">
-            <option value="">Select Week</option>
-            {uniqueWorkoutWeeks.map(week => (
-              <option key={week} value={week}>{week}</option>
-            ))}
-          </select>
+  const handleExerciseSelect = (groupName: string) => {
+    setSelectedExercise(groupName);
+    setStep('exercise');
+  };
+
+  const handleVideoOpen = (url: string) => {
+    setCurrentVideoUrl(url);
+    setIsVideoModalOpen(true);
+  };
+
+  const getNextExercise = () => {
+    const groupNames = Object.keys(groupedExercises);
+    const currentIndex = groupNames.indexOf(selectedExercise!);
+    return currentIndex < groupNames.length - 1 ? groupNames[currentIndex + 1] : null;
+  };
+
+  const handleNext = () => {
+    const nextExercise = getNextExercise();
+    if (nextExercise) {
+      setSelectedExercise(nextExercise);
+    } else {
+      // Reset to home when finished
+      setStep('week');
+      setSelectedWorkoutWeek('');
+      setSelectedWorkoutDay('');
+      setSelectedExercise(null);
+      setGroupedExercises({});
+    }
+  };
+
+  if (step === 'exercise' && selectedExercise && groupedExercises[selectedExercise]) {
+    const exercises = groupedExercises[selectedExercise];
+    const isLastExercise = !getNextExercise();
+
+    return (
+      <div className="container">
+        <h1 className="title">{selectedExercise}</h1>
+        <div className="exercise-details">
+          {exercises.map((exercise, index) => (
+            <div key={index} className="exercise-item">
+              <h2 className="exercise-name">{exercise.Exercises}</h2>
+              <div className="exercise-info">
+                <p>Rounds: {exercise.Rounds}</p>
+                <p>Reps: {exercise.Reps}</p>
+                <p>Rest: {exercise.Rest} min</p>
+              </div>
+              {exercise.Video && exercise.Video[0] && (
+                <button 
+                  className="watch-button"
+                  onClick={() => handleVideoOpen(exercise.Video![0].url)}
+                >
+                  Watch example
+                  <FontAwesomeIcon icon={faCirclePlay} />
+                </button>
+              )}
+            </div>
+          ))}
         </div>
-        
-        <div className="selector">
-          <select id="day-selector" value={selectedWorkoutDay} onChange={handleDayChange} disabled={!selectedWorkoutWeek} className="custom-select">
-            <option value="">Select Day</option>
-            {uniqueWorkoutDays.map(day => (
-              <option key={day} value={day}>{day}</option>
-            ))}
-          </select>
+        <div className="nav-footer">
+          <button className="nav-button" onClick={() => setStep('workout')}>
+            <FontAwesomeIcon icon={faChevronLeft} /> Exercises
+          </button>
+          <button className="nav-button next" onClick={handleNext}>
+            {isLastExercise ? 'Finish' : 'Next'} <FontAwesomeIcon icon={faChevronRight} />
+          </button>
+        </div>
+        <Modal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)}>
+          <video controls autoPlay muted src={currentVideoUrl} width="100%">
+            Sorry, your browser does not support embedded videos.
+          </video>
+        </Modal>
+      </div>
+    );
+  }
+
+  if (step === 'workout') {
+    return (
+      <div className="container">
+        <h1 className="title">{selectedWorkoutDay}: {selectedWorkoutDay === '1' ? 'Legs' : selectedWorkoutDay === '2' ? 'Chest' : selectedWorkoutDay === '3' ? 'Arm Day' : selectedWorkoutDay === '4' ? 'Back Day' : 'Shoulders & Abs'}</h1>
+        <div className="list-container-v2">
+          {Object.entries(groupedExercises).map(([groupName, exercises]) => (
+            <button
+              key={groupName}
+              className="list-item-v2"
+              onClick={() => handleExerciseSelect(groupName)}
+            >
+              <span className="item-text-v2">{groupName}</span>
+              <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+            </button>
+          ))}
+        </div>
+        <div className="nav-footer">
+          <button className="nav-button" onClick={handleBack}>
+            <FontAwesomeIcon icon={faChevronLeft} /> Day
+          </button>
         </div>
       </div>
-      <div className='workout-list'>
+    );
+  }
+
+  if (step === 'week') {
+    return (
+      <div className="container">
+        <h1 className="title">Select a week to begin</h1>
+        <div className="list-container-v2">
+          {uniqueWorkoutWeeks
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map(week => (
+              <button
+                key={week}
+                className="list-item-v2"
+                onClick={() => handleWeekSelect(week)}
+              >
+                <span className="item-text-v2">{week}</span>
+                <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+              </button>
+            ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 'day') {
+    return (
+      <div className="container">
+        <h1 className="title">Select a day</h1>
+        <div className="list-container-v2">
+          {uniqueWorkoutDays
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map(day => (
+              <button
+                key={day}
+                className="list-item-v2"
+                onClick={() => handleDaySelect(day)}
+              >
+                <span className="item-text-v2">{day}: {day === '1' ? 'Legs' : day === '2' ? 'Chest' : day === '3' ? 'Arm Day' : day === '4' ? 'Back Day' : 'Shoulders & Abs'}</span>
+                <FontAwesomeIcon icon={faChevronRight} className="chevron-v2" />
+              </button>
+            ))}
+        </div>
+        <div className="nav-footer">
+          <button className="nav-button" onClick={handleBack}>
+            <FontAwesomeIcon icon={faChevronLeft} /> Week
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container">
+      <h1 className="title">{selectedWorkoutDay}: {selectedWorkoutDay === '1' ? 'Legs' : selectedWorkoutDay === '2' ? 'Chest' : selectedWorkoutDay === '3' ? 'Arm Day' : selectedWorkoutDay === '4' ? 'Back Day' : 'Shoulders & Abs'}</h1>
+      <div className="workout-list">
         {Object.entries(groupedExercises).map(([groupName, exercises]) => (
-            <WorkoutSection
+          <WorkoutSection
             key={groupName}
             groupTitle={groupName}
-            exercises={exercises.filter(e => e.Exercises !== undefined)}  // Filter out undefined Exercises if not allowed
-            isOpen={openSectionId === groupName}
-            onClick={() => handleSectionClick(groupName)}
-            />
+            exercises={exercises.filter(e => e.Exercises !== undefined)}
+            isOpen={selectedExercise === groupName}
+            onClick={() => handleExerciseSelect(groupName)}
+          />
         ))}
-        </div>
+      </div>
+      <div className="nav-footer">
+        <button className="nav-button" onClick={handleBack}>‹ Day</button>
+      </div>
     </div>
   );
 };
 
-export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => {
     const apiKey = process.env.AIRTABLE_TOKEN;
     const baseId = process.env.AIRTABLE_BASE_ID;
     if (!apiKey || !baseId) {
@@ -134,8 +282,7 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
     return {
       props: {
         workoutData: records,
-      },
-      revalidate: 1,
+      }
     };
 };
   

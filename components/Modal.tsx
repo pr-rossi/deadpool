@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import styles from './Modal.module.css';
 
 // Define an interface for the Modal component props
 interface ModalProps {
@@ -11,10 +12,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-      <button onClick={onClose}>Close</button>
-        {children}
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <button className={styles.closeButton} onClick={onClose}>×</button>
+      <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+        <div className={styles.video}>
+          {children}
+        </div>
       </div>
     </div>
   );

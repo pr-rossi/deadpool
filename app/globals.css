@@ -1,141 +1,163 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --text-color: #000000;
-  --text-secondary: #989898;
-  --background: #ffffff;
-  --card-bg: #f1f1f1;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-color: #ffffff;
-    --text-secondary: #989898;
-    --background: #000000;
-    --card-bg: #242424;
-  }
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  color: var(--text-color);
-  background: var(--background);
+  background: #000000;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-/* Add custom styles for the container of the selects */
-.select-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Custom styles for the labels */
-.select-label {
-  color: var(--text-color); /* White text */
-  margin-right: 0.5rem; /* Space between label and select */
-}
-
-/* You might need to add custom styles for the focus state */
-.custom-select:focus {
-  outline: none;
-  border-color: #aaa; /* Highlighted border color */
-}
-
-.workout-list {
+.container {
   padding: 1rem;
+  max-width: 100%;
+  min-height: 100vh;
 }
 
-.exercise-title {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+.title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: #fff;
 }
 
-.rest {
-  margin-bottom: 1rem;
-}
-
-.rounds, .rest, .reps {
-  color: var(--text-secondary);
-}
-
-.exercise-list {
+/* List styles */
+.list-container-v2 {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
-}
-
-#week-selector {
-  border-right: 1px solid var(--background);
-}
-
-.selector {
-  position: relative;
-  display: inline-block;
+  gap: 1rem;
   width: 100%;
 }
 
-.custom-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-color: var(--card-bg);
-  color: var(--text-color);
+.list-item-v2 {
+  padding: 0.75rem 1rem;
+  background-color: #2D2D2D;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  padding: 1rem 1rem;
-  font-size: 1rem; /* Adjust the font-size accordingly */
+  border-radius: 0.25rem;
+  border: none;
+  color: white;
+  cursor: pointer;
+  text-align: left;
+}
+
+.item-text-v2 {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.chevron-v2 {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
+/* Navigation footer */
+.nav-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: space-between;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.nav-button, .nav-button.next {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  color: white;
+  font-size: 1rem;
   cursor: pointer;
 }
 
-.selector::after {
-  font-family: 'FontAwesome';
-  content: '\f078'; /* FontAwesome chevron-down */
-  color: #444; /* Icon color */
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-size: .8rem;
+.nav-button svg {
+  font-size: 0.875rem;
 }
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+
+/* Workout section styles */
+.workout-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  
+  .nav-footer {
+    max-width: 680px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* Exercise details page */
+.exercise-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.exercise-item {
+  background: #2D2D2D;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.exercise-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.exercise-info {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.exercise-info p {
+  font-size: 1rem;
+}
+
+.watch-button {
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  width: auto;
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  font-size: 1rem;
+  cursor: pointer;
+  gap: 0.5rem;
 }
 
-.modal-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1001;
-  position: relative;
-  max-width: 500px; 
-  width: 90%;
-}
-
-.exercise-header {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
-.play-button {
-  font-size: 2rem;
-}
+.watch-button svg {
+  color: #000000;
+  font-size: 1.25rem;
+} 

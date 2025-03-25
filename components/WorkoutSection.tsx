@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faChevronUp, faChevronDown, faCirclePlay } from '@fortawesome/free-solid-svg-icons';
+import { faChevronUp, faChevronDown, faCirclePlay } from '@fortawesome/free-solid-svg-icons';
 import styles from './WorkoutSection.module.css';
 import Modal from './Modal';
 
@@ -27,7 +27,7 @@ const WorkoutSection: React.FC<WorkoutSectionProps> = ({
 }) => {
     const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
     const [currentVideoUrl, setCurrentVideoUrl] = useState('');
-    const contentRef = useRef<HTMLDivElement>(null);  // Define contentRef here
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const handleVideoOpen = (url: string) => {
         setCurrentVideoUrl(url);
@@ -46,22 +46,31 @@ const WorkoutSection: React.FC<WorkoutSectionProps> = ({
         <div className={styles.workoutSection}>
             <button className={styles.button} onClick={onClick}>
                 <span className={styles.title}>{groupTitle}</span>
-                <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={`${styles.arrow} ${isOpen ? styles.open : ''}`} />
+                <FontAwesomeIcon 
+                    icon={isOpen ? faChevronUp : faChevronDown} 
+                    className={`${styles.arrow} ${isOpen ? styles.open : ''}`} 
+                />
             </button>
             <div ref={contentRef} className={styles.content}>
                 {exercises.map((exercise, index) => (
                     <div key={index} className={styles.exercise}>
-                        <div className="exercise-header">
-                        <div className="exercise-title">{exercise.Exercises || "No Exercise Listed"}</div>
-                        {exercise.Video && exercise.Video.map((video, vidIndex) => (
-                            <button key={vidIndex} onClick={() => handleVideoOpen(video.url)} className="play-button">
-                                <FontAwesomeIcon icon={faCirclePlay} />
-                            </button>
-                        ))}
+                        <div className={styles.exerciseHeader}>
+                            <div className={styles.exerciseTitle}>{exercise.Exercises || "No Exercise Listed"}</div>
+                            {exercise.Video && exercise.Video.map((video, vidIndex) => (
+                                <button 
+                                    key={vidIndex} 
+                                    onClick={() => handleVideoOpen(video.url)} 
+                                    className={styles.playButton}
+                                >
+                                    <FontAwesomeIcon icon={faCirclePlay} />
+                                </button>
+                            ))}
                         </div>
-                        <div className="rounds">Rounds: {exercise.Rounds !== undefined ? exercise.Rounds : "N/A"}</div>
-                        <div className="reps">Reps: {exercise.Reps || "N/A"}</div>
-                        <div className="rest">Rest: {exercise.Rest || "N/A"} min</div>
+                        <div className={styles.details}>
+                            <div>Rounds: {exercise.Rounds !== undefined ? exercise.Rounds : "N/A"}</div>
+                            <div>Reps: {exercise.Reps || "N/A"}</div>
+                            <div>Rest: {exercise.Rest || "N/A"} min</div>
+                        </div>
                     </div>
                 ))}
             </div>
