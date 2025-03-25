@@ -258,7 +258,7 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
                 className={`list-item-v2 ${isWeekCompleted(week) ? 'completed' : ''}`}
                 onClick={() => handleWeekSelect(week)}
               >
-                <span className="item-text-v2">Week {week}</span>
+                <span className="item-text-v2">{week}</span>
                 <div className="button-indicators">
                   {isWeekCompleted(week) && (
                     <FontAwesomeIcon icon={faCheck} className="check-icon" />
@@ -288,7 +288,7 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
                 className={`list-item-v2 ${isDayCompleted(day) ? 'completed' : ''}`}
                 onClick={() => handleDaySelect(day)}
               >
-                <span className="item-text-v2">Day {day}: {day === '1' ? 'Legs' : day === '2' ? 'Chest' : day === '3' ? 'Arm Day' : day === '4' ? 'Back Day' : 'Shoulders & Abs'}</span>
+                <span className="item-text-v2">{day}: {day === '1' ? 'Legs' : day === '2' ? 'Chest' : day === '3' ? 'Arm Day' : day === '4' ? 'Back Day' : 'Shoulders & Abs'}</span>
                 <div className="button-indicators">
                   {isDayCompleted(day) && (
                     <FontAwesomeIcon icon={faCheck} className="check-icon" />
