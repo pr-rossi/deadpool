@@ -28,6 +28,41 @@ interface HomePageProps {
     workoutData: Exercise[];
 }
 
+const CircularProgress = ({ progress }: { progress: number }) => {
+  const radius = 5;  // Reduced from 8 to 5 for 1.25rem total size
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="progress-indicator">
+      <svg width="1.25rem" height="1.25rem" viewBox="0 0 12 12">
+        {/* Background circle */}
+        <circle
+          cx="6"
+          cy="6"
+          r={radius}
+          stroke="rgba(48, 209, 88, 0.1)"
+          strokeWidth="1.5"
+          fill="none"
+        />
+        {/* Progress circle */}
+        <circle
+          cx="6"
+          cy="6"
+          r={radius}
+          stroke="#30D158"
+          strokeWidth="1.5"
+          fill="none"
+          strokeLinecap="round"
+          transform="rotate(-90, 6, 6)"
+          strokeDasharray={`${circumference} ${circumference}`}
+          strokeDashoffset={strokeDashoffset}
+        />
+      </svg>
+    </div>
+  );
+};
+
 const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
   const [selectedWorkoutWeek, setSelectedWorkoutWeek] = useState<string>('');
   const [selectedWorkoutDay, setSelectedWorkoutDay] = useState<string>('');
@@ -270,10 +305,10 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
                 >
                   <span className="item-text-v2">Week {week}</span>
                   <div className="button-indicators">
-                    {progress > 0 && (
-                      <div className="progress-indicator">
-                        <span className="progress-text">{progress}%</span>
-                      </div>
+                    {progress === 0 ? (
+                      <span className="not-started-pill">Not started</span>
+                    ) : (
+                      <CircularProgress progress={progress} />
                     )}
                     {isWeekCompleted(week) && (
                       <FontAwesomeIcon icon={faCheck} className="check-icon" />
