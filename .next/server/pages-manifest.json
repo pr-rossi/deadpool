@@ -2,8 +2,6 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js",
   "/login": "pages/login.js",
-  "/api/progress/reset-week": "pages/api/progress/reset-week.js",
-  "/api/progress": "pages/api/progress.js"
+  "/": "pages/index.js"
 }
