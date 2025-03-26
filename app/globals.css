@@ -22,8 +22,6 @@ body {
 .title {
   font-size: 1.5rem;
   font-weight: 500;
-  margin-bottom: 1.5rem;
-  margin-top: 2rem;
   color: #fff;
 }
 
@@ -37,7 +35,7 @@ body {
 
 .list-item-v2 {
   padding: 1rem;
-  background-color: #2D2D2D;
+  background-color: #181B1F;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -48,6 +46,11 @@ body {
   color: white;
   cursor: pointer;
   text-align: left;
+  transition: ease .3s;
+}
+
+.list-item-v2:hover {
+  background-color: #15181B;
 }
 
 .item-text-v2 {
@@ -58,7 +61,9 @@ body {
 .chevron-v2 {
   color: rgba(255, 255, 255, 0.3);
   font-size: 1rem;
-  margin-left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Navigation footer */
@@ -82,7 +87,7 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border: none;
   padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
+  border-radius: 0.25rem;
   color: white;
   font-size: 1rem;
   cursor: pointer;
@@ -122,7 +127,7 @@ body {
 }
 
 .exercise-item {
-  background: #2D2D2D;
+  background: #181B1F;
   border-radius: 0.75rem;
   padding: 1.25rem;
   display: flex;
@@ -182,11 +187,22 @@ body {
 .check-icon {
   color: #4CD964;
   font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .list-item-v2.completed {
   border: 1px solid rgba(76, 217, 100, 0.3);
   background: rgba(76, 217, 100, 0.1);
+}
+
+.list-item-v2.completed .check-icon {
+  color: #4CD964;
+}
+
+.list-item-v2.completed .chevron-v2 {
+  color: rgba(76, 217, 100, 0.5);
 }
 
 .complete-button {
@@ -269,4 +285,166 @@ body {
   padding: 0.25rem 0.5rem;
   border-radius: 1rem;
   white-space: nowrap;
+}
+
+.container.is-centered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Login styles */
+.login-container {
+  max-width: 400px;
+  width: 100%;
+  padding: 2rem;
+  background-color: #181B1F;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.login-form, form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  color: #A6A6A6;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  border: none;
+  background-color: #000000;
+  color: white;
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4299e1;
+}
+
+.login-button {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #C4BFFF;
+  color: #181B1F;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.login-button:hover {
+  background-color: #A29DE4;
+}
+
+.error-message {
+  color: #e53e3e;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: rgba(229, 62, 62, 0.1);
+  border-radius: 0.375rem;
+}
+
+.login-container h1 {
+  margin-bottom: 1.5rem;
+}
+
+/* Header and logout button */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background-color: rgba(189, 49, 50, 0.2);
+  border: none;
+  border-radius: 0.375rem;
+  color: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+  background-color: rgba(189, 49, 50, 1);
+}
+
+.logout-button svg {
+  font-size: 0.875rem;
+}
+
+.forgot-password {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.forgot-password a {
+  color: #C4BFFF;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+
+.back-to-login {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.back-to-login a {
+  color: #C4BFFF;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.back-to-login a:hover {
+  text-decoration: underline;
+}
+
+.success-message {
+  background-color: #D4EDDA;
+  color: #155724;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.error-message {
+  background-color: #F8D7DA;
+  color: #721C24;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.subtitle {
+  color: #A6A6A6;
+  margin-bottom: 1.5rem;
+  text-align: left;
 } 

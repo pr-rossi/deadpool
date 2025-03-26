@@ -4,7 +4,8 @@ import Airtable, { Table, Records, FieldSet } from 'airtable';
 import WorkoutSection from '../components/WorkoutSection';
 import Modal from '../components/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlay, faChevronRight, faChevronLeft, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCirclePlay, faChevronRight, faChevronLeft, faCheck, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/router';
 
 interface ExerciseRecord extends FieldSet {
     [key: string]: any;  // Ensuring compliance with FieldSet
@@ -24,8 +25,20 @@ interface Exercise {
     fields: ExerciseRecord;
 }
 
+interface User {
+    id: string;
+    email: string;
+    name: string;
+}
+
 interface HomePageProps {
     workoutData: Exercise[];
+}
+
+interface Progress {
+  exerciseId: string;
+  completed: boolean;
+  lastUpdated: string; // Airtable's ISO timestamp format
 }
 
 const CircularProgress = ({ progress }: { progress: number }) => {
@@ -64,6 +77,8 @@ const CircularProgress = ({ progress }: { progress: number }) => {
 };
 
 const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
   const [selectedWorkoutWeek, setSelectedWorkoutWeek] = useState<string>('');
   const [selectedWorkoutDay, setSelectedWorkoutDay] = useState<string>('');
   const [uniqueWorkoutWeeks, setUniqueWorkoutWeeks] = useState<string[]>([]);
@@ -73,21 +88,87 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
   const [step, setStep] = useState<'week' | 'day' | 'workout' | 'exercise'>('week');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState('');
-  const [completedExercises, setCompletedExercises] = useState<Set<string>>(() => {
-    // Load completed exercises from localStorage on initial render
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('completedExercises');
-      if (saved) {
-        return new Set(JSON.parse(saved));
-      }
-    }
-    return new Set();
-  });
+  const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set());
 
-  // Save completed exercises to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('completedExercises', JSON.stringify(Array.from(completedExercises)));
-  }, [completedExercises]);
+    // Check for user authentication
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      // Load user's progress
+      loadUserProgress(JSON.parse(storedUser).id);
+    } else {
+      router.push('/login');
+    }
+  }, []);
+
+  const loadUserProgress = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/progress?userId=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      if (data.progress) {
+        const completedSet = new Set<string>(
+          data.progress
+            .filter((p: Progress) => p.completed)
+            .map((p: Progress) => p.exerciseId)
+        );
+        setCompletedExercises(completedSet);
+      }
+    } catch (error) {
+      console.error('Error loading progress:', error);
+    }
+  };
+
+  const handleExerciseComplete = async (exerciseId: string) => {
+    if (!user) return;
+
+    const isCompleted = completedExercises.has(exerciseId);
+    try {
+      const response = await fetch('/api/progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          exerciseId,
+          completed: !isCompleted,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update progress');
+      }
+
+      const data = await response.json();
+      if (data.message === 'Progress updated successfully') {
+        setCompletedExercises(prev => {
+          const newSet = new Set(prev);
+          if (isCompleted) {
+            newSet.delete(exerciseId);
+          } else {
+            newSet.add(exerciseId);
+          }
+          return newSet;
+        });
+      }
+    } catch (error) {
+      console.error('Error updating progress:', error);
+      alert('Failed to update progress. Please try again.');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    router.push('/login');
+  };
 
   useEffect(() => {
     const workoutWeeks = Array.from(new Set(workoutData.map(item => item.fields.WorkoutWeek).filter(week => week !== undefined))) as string[];
@@ -161,18 +242,6 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     }
   };
 
-  const handleExerciseComplete = (exerciseId: string) => {
-    setCompletedExercises(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(exerciseId)) {
-        newSet.delete(exerciseId);
-      } else {
-        newSet.add(exerciseId);
-      }
-      return newSet;
-    });
-  };
-
   const isGroupCompleted = (groupExercises: Exercise[]) => {  // Update type to Exercise[]
     return groupExercises.every(exercise => completedExercises.has(exercise.id));
   };
@@ -198,12 +267,51 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
   };
 
   // Add function to reset progress
-  const resetProgress = () => {
+  const resetProgress = async () => {
+    if (!user) return;
+    
     if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
-      setCompletedExercises(new Set());
-      localStorage.removeItem('completedExercises');
+      try {
+        // Get all progress records for the user
+        const response = await fetch('/api/progress', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user.id }),
+        });
+
+        const data = await response.json();
+        if (data.progress) {
+          // Update all completed exercises to false
+          await Promise.all(
+            data.progress.map(async (record: Progress) => {
+              await fetch('/api/progress', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  userId: user.id,
+                  exerciseId: record.exerciseId,
+                  completed: false,
+                }),
+              });
+            })
+          );
+
+          setCompletedExercises(new Set());
+        }
+      } catch (error) {
+        console.error('Error resetting progress:', error);
+        alert('Failed to reset progress. Please try again.');
+      }
     }
   };
+
+  if (!user) {
+    return null; // or a loading state
+  }
 
   if (step === 'exercise' && selectedExercise && groupedExercises[selectedExercise]) {
     const exercises = groupedExercises[selectedExercise];
@@ -211,9 +319,14 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
 
     return (
       <div className="container">
-        <h1 className="title">{selectedExercise}</h1>
+        <div className="header">
+          <h1 className="title">{selectedExercise}</h1>
+          <button className="logout-button" onClick={handleLogout}>
+            <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+          </button>
+        </div>
         <div className="exercise-details">
-          {exercises.map((exercise, index) => (
+          {exercises.map((exercise) => (
             <div key={exercise.id} className="exercise-item">
               <div className="exercise-header">
                 <h2 className="exercise-name">{exercise.fields.Exercises}</h2>
@@ -261,7 +374,12 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
   if (step === 'workout') {
     return (
       <div className="container">
-        <h1 className="title">{selectedWorkoutDay}: {selectedWorkoutDay === '1' ? 'Legs' : selectedWorkoutDay === '2' ? 'Chest' : selectedWorkoutDay === '3' ? 'Arm Day' : selectedWorkoutDay === '4' ? 'Back Day' : 'Shoulders & Abs'}</h1>
+        <div className="header">
+          <h1 className="title">{selectedWorkoutDay}: {selectedWorkoutDay === '1' ? 'Legs' : selectedWorkoutDay === '2' ? 'Chest' : selectedWorkoutDay === '3' ? 'Arm Day' : selectedWorkoutDay === '4' ? 'Back Day' : 'Shoulders & Abs'}</h1>
+          <button className="logout-button" onClick={handleLogout}>
+            <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+          </button>
+        </div>
         <div className="list-container-v2">
           {Object.entries(groupedExercises).map(([groupName, exercises]) => (
             <button
@@ -291,7 +409,12 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
   if (step === 'week') {
     return (
       <div className="container">
-        <h1 className="title">Select a week to begin</h1>
+        <div className="header">
+          <h1 className="title">Select a week to begin</h1>
+          <button className="logout-button" onClick={handleLogout}>
+            <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+          </button>
+        </div>
         <div className="list-container-v2">
           {uniqueWorkoutWeeks
             .sort((a, b) => parseInt(a) - parseInt(b))
@@ -319,9 +442,6 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
               );
             })}
         </div>
-        <button className="reset-button" onClick={resetProgress}>
-          Reset Progress
-        </button>
       </div>
     );
   }
@@ -329,7 +449,12 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
   if (step === 'day') {
     return (
       <div className="container">
-        <h1 className="title">Select a day</h1>
+        <div className="header">
+          <h1 className="title">Select a day</h1>
+          <button className="logout-button" onClick={handleLogout}>
+            <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+          </button>
+        </div>
         <div className="list-container-v2">
           {uniqueWorkoutDays
             .sort((a, b) => parseInt(a) - parseInt(b))
