@@ -1,0 +1,88 @@
+.day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.day-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background-color: #181B1F;
+    border: 1px solid #282D32;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #ffffff;
+    text-align: left;
+    min-height: 120px;
+}
+
+.day-card:hover {
+    background-color: #282D32;
+    transform: translateY(-2px);
+}
+
+.day-card.completed {
+    border-color: #2E4B3C;
+}
+
+.day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.day-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.day-number {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.day-name {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.day-progress {
+    width: 100%;
+}
+
+.not-started-pill {
+    background-color: #282D32;
+    color: #f1f1f1;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.chevron-icon {
+    color: #f1f1f1;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.day-card:hover .chevron-icon {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .day-grid {
+        grid-template-columns: 1fr;
+        padding: 0px;
+        margin-bottom: 4rem;
+    }
+
+    .day-card {
+        padding: 1rem;
+        min-height: 100px;
+    }
+} 

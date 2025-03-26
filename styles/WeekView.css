@@ -1,0 +1,80 @@
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.week-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background-color: #181B1F;
+    border: 1px solid #282D32;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #ffffff;
+    text-align: left;
+    min-height: 120px;
+}
+
+.week-card:hover {
+    background-color: #282D32;
+    transform: translateY(-2px);
+}
+
+.week-card.completed {
+    border-color: #2E4B3C;
+}
+
+.week-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.week-number {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.week-progress {
+    width: 100%;
+}
+
+.not-started-pill {
+    background-color: #282D32;
+    color: #f1f1f1;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.check-icon {
+    color: #2E4B3C;
+}
+
+.chevron-icon {
+    color: #f1f1f1;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.week-card:hover .chevron-icon {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .week-grid {
+        grid-template-columns: 1fr;
+        padding: 0px;
+        margin-bottom: 4rem;
+    }
+
+    .week-card {
+        padding: 1rem;
+        min-height: 100px;
+    }
+} 

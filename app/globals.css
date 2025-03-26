@@ -164,11 +164,6 @@ body {
   gap: 0.5rem;
 }
 
-.watch-button svg {
-  color: #000000;
-  font-size: 1.25rem;
-}
-
 /* Exercise completion styles */
 .exercise-header {
   display: flex;
@@ -193,16 +188,16 @@ body {
 }
 
 .list-item-v2.completed {
-  border: 1px solid rgba(76, 217, 100, 0.3);
-  background: rgba(76, 217, 100, 0.1);
+  border: 1px solid rgba(212, 255, 153, 0.3);
+  background: rgba(212, 255, 153, 0.1);
 }
 
 .list-item-v2.completed .check-icon {
-  color: #4CD964;
+  color: rgba(212, 255, 153, 1);
 }
 
 .list-item-v2.completed .chevron-v2 {
-  color: rgba(76, 217, 100, 0.5);
+  color: rgba(212, 255, 153, 1);
 }
 
 .complete-button {
@@ -220,8 +215,8 @@ body {
 }
 
 .complete-button.completed {
-  background: #4CD964;
-  color: white;
+  background: rgba(212, 255, 153, 1);
+  color: #181B1F;
 }
 
 .complete-button:hover {
@@ -370,7 +365,7 @@ body {
   justify-content: space-between;
   align-items: end;
   margin-bottom: 2rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .logout-button {
