@@ -150,6 +150,35 @@
     color: rgba(212, 255, 153, 1);
 }
 
+.progress-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.restart-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(226, 75, 76, 0.1);
+    border: none;
+    border-radius: 6px;
+    color: rgba(226, 75, 76, 1);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.restart-button:hover {
+    background: rgba(226, 75, 76, 0.2);
+    transform: translateY(-1px);
+}
+
+.restart-button svg {
+    font-size: 0.85rem;
+}
+
 @media (max-width: 768px) {
     .landing-container {
         padding: 0px;

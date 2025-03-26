@@ -107,12 +107,12 @@ body {
 /* Desktop styles */
 @media (min-width: 768px) {
   .container {
-    max-width: 680px;
+    max-width: 800px;
     margin: 0 auto;
   }
   
   .nav-footer {
-    max-width: 680px;
+    max-width: 800px;
     left: 50%;
     transform: translateX(-50%);
   }

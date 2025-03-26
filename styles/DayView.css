@@ -74,6 +74,43 @@
     opacity: 1;
 }
 
+.day-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.day-header-row h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+}
+
+.restart-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(226, 75, 76, 0.1);
+    border: none;
+    border-radius: 8px;
+    color: rgba(226, 75, 76, 1);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.restart-button:hover {
+    background: rgba(226, 75, 76, 0.2);
+    transform: translateY(-1px);
+}
+
+.restart-button svg {
+    font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
     .day-grid {
         grid-template-columns: 1fr;
@@ -84,5 +121,16 @@
     .day-card {
         padding: 1rem;
         min-height: 100px;
+    }
+
+    .day-header-row {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .day-header-row h1 {
+        font-size: 1.75rem;
     }
 } 

@@ -1,8 +1,13 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { 
+    faCheck, 
+    faChevronRight, 
+    faRotateLeft 
+} from '@fortawesome/free-solid-svg-icons';
 import LinearProgress from './CircularProgress';
 import Navigation from './Navigation';
+import DropdownMenu from './DropdownMenu';
 import { Exercise } from '../types';
 import '../styles/WeekView.css';
 import '../styles/LinearProgress.css';
@@ -13,6 +18,7 @@ interface WeekViewProps {
     onWeekSelect: (week: string) => void;
     workoutData: Exercise[];
     onBack: () => void;
+    onRestartPlan: () => void;
 }
 
 const WeekView: React.FC<WeekViewProps> = ({
@@ -20,7 +26,8 @@ const WeekView: React.FC<WeekViewProps> = ({
     completedExercises,
     onWeekSelect,
     workoutData,
-    onBack
+    onBack,
+    onRestartPlan
 }) => {
     const getWeekProgress = (week: string) => {
         const weekExercises = workoutData.filter(exercise => exercise.fields.WorkoutWeek === week);
@@ -33,8 +40,29 @@ const WeekView: React.FC<WeekViewProps> = ({
         return weekExercises.length > 0 && weekExercises.every(exercise => completedExercises.has(exercise.id));
     };
 
+    const handleRestartClick = () => {
+        onRestartPlan();
+    };
+
+    const hasCompletedExercises = completedExercises.size > 0;
+
+    const dropdownItems = hasCompletedExercises ? [
+        {
+            label: 'Restart Plan',
+            icon: faRotateLeft,
+            onClick: handleRestartClick,
+            className: 'danger'
+        }
+    ] : [];
+
     return (
         <>
+            <div className="week-header-row">
+                <h1>Select a week to begin</h1>
+                {hasCompletedExercises && (
+                    <DropdownMenu items={dropdownItems} />
+                )}
+            </div>
             <div className="week-grid">
                 {uniqueWorkoutWeeks
                     .sort((a, b) => parseInt(a) - parseInt(b))

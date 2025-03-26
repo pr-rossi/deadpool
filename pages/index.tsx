@@ -8,8 +8,11 @@ import DayView from '../components/DayView';
 import WorkoutView from '../components/WorkoutView';
 import ExerciseView from '../components/ExerciseView';
 import LandingPage from '../components/LandingPage';
+import Alert from '../components/Alert';
+import ConfirmationModal from '../components/ConfirmationModal';
 import { Exercise, User, Progress, HomePageProps, Step, ExerciseRecord } from '../types';
 import '../styles/Header.css';
+import Modal from '../components/Modal';
 
 const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     const router = useRouter();
@@ -24,6 +27,10 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
     const [currentVideoUrl, setCurrentVideoUrl] = useState('');
     const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set());
+    const [alert, setAlert] = useState<{ type: 'success' | 'error' | 'warning'; message: string } | null>(null);
+    const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+    const [confirmationMessage, setConfirmationMessage] = useState('');
+    const [confirmationCallback, setConfirmationCallback] = useState<() => void>(() => {});
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
@@ -93,7 +100,10 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
             }
         } catch (error) {
             console.error('Error updating progress:', error);
-            alert('Failed to update progress. Please try again.');
+            setAlert({
+                type: 'error',
+                message: 'Failed to update progress. Please try again.'
+            });
         }
     };
 
@@ -135,13 +145,18 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     };
 
     const handleBack = () => {
-        if (step === 'workout') {
+        if (step === 'exercise') {
+            setStep('workout');
+            setSelectedExercise(null);
+        } else if (step === 'workout') {
             setStep('day');
             setSelectedWorkoutDay('');
             setGroupedExercises({});
         } else if (step === 'day') {
             setStep('week');
             setSelectedWorkoutWeek('');
+        } else if (step === 'week') {
+            setStep('landing');
         }
     };
 
@@ -153,6 +168,10 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     const handleVideoOpen = (url: string) => {
         setCurrentVideoUrl(url);
         setIsVideoModalOpen(true);
+    };
+
+    const handleVideoClose = () => {
+        setIsVideoModalOpen(false);
     };
 
     const getNextExercise = () => {
@@ -178,6 +197,109 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
         setStep('week');
     };
 
+    const showConfirmation = (message: string, callback: () => void) => {
+        setConfirmationMessage(message);
+        setConfirmationCallback(() => callback);
+        setIsConfirmationOpen(true);
+    };
+
+    const handleConfirm = () => {
+        confirmationCallback();
+        setIsConfirmationOpen(false);
+    };
+
+    const handleRestartPlan = async () => {
+        if (!user) return;
+
+        const doRestart = async () => {
+            try {
+                const response = await fetch('/api/progress/reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: user.id,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to reset progress');
+                }
+
+                // Reset local state
+                setCompletedExercises(new Set());
+                setStep('week');
+                setAlert({
+                    type: 'success',
+                    message: 'Workout plan has been reset'
+                });
+            } catch (error) {
+                console.error('Error resetting progress:', error);
+                setAlert({
+                    type: 'error',
+                    message: 'Failed to reset progress. Please try again.'
+                });
+            }
+        };
+
+        showConfirmation(
+            'Are you sure you want to restart the plan? All progress will be reset.',
+            doRestart
+        );
+    };
+
+    const handleRestartWeek = async () => {
+        if (!user) return;
+
+        const doRestart = async () => {
+            try {
+                const response = await fetch('/api/progress/reset-week', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: user.id,
+                        weekNumber: selectedWorkoutWeek,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to reset week progress');
+                }
+
+                // Reset local state for the current week's exercises
+                const weekExercises = workoutData.filter(
+                    exercise => exercise.fields.WorkoutWeek === selectedWorkoutWeek
+                );
+                
+                setCompletedExercises(prev => {
+                    const newSet = new Set(prev);
+                    weekExercises.forEach(exercise => {
+                        newSet.delete(exercise.id);
+                    });
+                    return newSet;
+                });
+                setAlert({
+                    type: 'success',
+                    message: 'Week progress has been reset'
+                });
+            } catch (error) {
+                console.error('Error resetting week progress:', error);
+                setAlert({
+                    type: 'error',
+                    message: 'Failed to reset week progress. Please try again.'
+                });
+            }
+        };
+
+        showConfirmation(
+            `Are you sure you want to restart this week? All progress for Week ${selectedWorkoutWeek} will be reset.`,
+            doRestart
+        );
+    };
+
     if (!user) {
         return null;
     }
@@ -192,8 +314,27 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
         }
     };
 
+    const isLastExerciseInGroup = selectedExercise && groupedExercises[selectedExercise] ? 
+        groupedExercises[selectedExercise].length === 1 : 
+        false;
+
     return (
         <div className="container">
+            {alert && (
+                <Alert
+                    type={alert.type}
+                    message={alert.message}
+                    onClose={() => setAlert(null)}
+                />
+            )}
+
+            <ConfirmationModal
+                isOpen={isConfirmationOpen}
+                message={confirmationMessage}
+                onConfirm={handleConfirm}
+                onCancel={() => setIsConfirmationOpen(false)}
+            />
+
             {step !== 'landing' && (
                 <Header 
                     title={
@@ -210,10 +351,12 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
 
             {step === 'landing' && (
                 <LandingPage 
-                    onPlanSelect={handlePlanSelect}
+                    onPlanSelect={() => setStep('week')}
                     userEmail={user.email}
                     userName={user.name}
                     onLogout={handleLogout}
+                    workoutData={workoutData}
+                    completedExercises={completedExercises}
                 />
             )}
 
@@ -223,7 +366,8 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
                     completedExercises={completedExercises}
                     onWeekSelect={handleWeekSelect}
                     workoutData={workoutData}
-                    onBack={() => setStep('landing')}
+                    onBack={handleBack}
+                    onRestartPlan={handleRestartPlan}
                 />
             )}
 
@@ -235,6 +379,7 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
                     selectedWorkoutWeek={selectedWorkoutWeek}
                     workoutData={workoutData}
                     onBack={handleBack}
+                    onRestartWeek={handleRestartWeek}
                 />
             )}
 
@@ -255,11 +400,25 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
                     onVideoOpen={handleVideoOpen}
                     isVideoModalOpen={isVideoModalOpen}
                     currentVideoUrl={currentVideoUrl}
-                    onCloseVideo={() => setIsVideoModalOpen(false)}
-                    onBack={() => setStep('workout')}
+                    onCloseVideo={handleVideoClose}
+                    onBack={handleBack}
                     onNext={handleNext}
-                    isLastExercise={!getNextExercise()}
+                    isLastExercise={isLastExerciseInGroup}
                 />
+            )}
+
+            {isVideoModalOpen && (
+                <Modal onClose={handleVideoClose} isOpen={isVideoModalOpen}>
+                    <div className="video-container">
+                        <iframe
+                            src={currentVideoUrl}
+                            title="Exercise Video"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    </div>
+                </Modal>
             )}
         </div>
     );

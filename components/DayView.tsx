@@ -1,9 +1,13 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { 
+    faChevronRight, 
+    faRotateLeft 
+} from '@fortawesome/free-solid-svg-icons';
 import { Exercise } from '../types';
 import Navigation from './Navigation';
 import LinearProgress from './CircularProgress';
+import DropdownMenu from './DropdownMenu';
 import '../styles/DayView.css';
 
 interface DayViewProps {
@@ -13,6 +17,7 @@ interface DayViewProps {
     selectedWorkoutWeek: string;
     workoutData: Exercise[];
     onBack: () => void;
+    onRestartWeek: () => void;
 }
 
 const DayView: React.FC<DayViewProps> = ({
@@ -21,7 +26,8 @@ const DayView: React.FC<DayViewProps> = ({
     onDaySelect,
     selectedWorkoutWeek,
     workoutData,
-    onBack
+    onBack,
+    onRestartWeek
 }) => {
     const getDayProgress = (day: string) => {
         const dayExercises = workoutData.filter(
@@ -48,8 +54,33 @@ const DayView: React.FC<DayViewProps> = ({
         }
     };
 
+    const handleRestartWeek = () => {
+        onRestartWeek();
+    };
+
+    const hasCompletedExercisesInWeek = workoutData.some(
+        exercise => 
+            exercise.fields.WorkoutWeek === selectedWorkoutWeek && 
+            completedExercises.has(exercise.id)
+    );
+
+    const dropdownItems = hasCompletedExercisesInWeek ? [
+        {
+            label: 'Restart Week',
+            icon: faRotateLeft,
+            onClick: handleRestartWeek,
+            className: 'danger'
+        }
+    ] : [];
+
     return (
         <>
+            <div className="day-header-row">
+                <h1>Week {selectedWorkoutWeek}</h1>
+                {hasCompletedExercisesInWeek && (
+                    <DropdownMenu items={dropdownItems} />
+                )}
+            </div>
             <div className="day-grid">
                 {uniqueWorkoutDays
                     .sort((a, b) => parseInt(a) - parseInt(b))
