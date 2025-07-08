@@ -409,15 +409,9 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
 
             {isVideoModalOpen && (
                 <Modal onClose={handleVideoClose} isOpen={isVideoModalOpen}>
-                    <div className="video-container">
-                        <iframe
-                            src={currentVideoUrl}
-                            title="Exercise Video"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        />
-                    </div>
+                    <video controls autoPlay muted src={currentVideoUrl} width="100%">
+                        Sorry, your browser does not support embedded videos.
+                    </video>
                 </Modal>
             )}
         </div>
