@@ -1,0 +1,128 @@
+.native-spinner {
+  display: inline-block;
+  position: relative;
+}
+
+.spinner-track {
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  animation: rotate 1s linear infinite;
+}
+
+.spinner-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  opacity: 0.9;
+}
+
+/* Size variations */
+.native-spinner.small .spinner-track {
+  width: 16px;
+  height: 16px;
+}
+
+.native-spinner.small .spinner-fill {
+  border-width: 1.5px;
+}
+
+.native-spinner.medium .spinner-track {
+  width: 24px;
+  height: 24px;
+}
+
+.native-spinner.medium .spinner-fill {
+  border-width: 2px;
+}
+
+.native-spinner.large .spinner-track {
+  width: 32px;
+  height: 32px;
+}
+
+.native-spinner.large .spinner-fill {
+  border-width: 3px;
+}
+
+/* Style variations */
+.native-spinner.default {
+  color: var(--color-text-secondary);
+}
+
+.native-spinner.primary {
+  color: var(--color-primary);
+}
+
+.native-spinner.white {
+  color: white;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* iOS-style loading dots */
+.native-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.native-dots .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+  animation: bounce-dots 1.4s infinite ease-in-out;
+}
+
+.native-dots .dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.native-dots .dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce-dots {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Progress ring (like iOS) */
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+  fill: transparent;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 3;
+}
+
+.progress-ring-progress {
+  fill: transparent;
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 0.3s ease;
+}

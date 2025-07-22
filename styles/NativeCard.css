@@ -1,0 +1,306 @@
+.native-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  position: relative;
+  transition: all var(--transition-native);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Card variants */
+.native-card.default {
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.native-card.elevated {
+  border: none;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.native-card.outlined {
+  border: 2px solid var(--color-border);
+  box-shadow: none;
+}
+
+.native-card.filled {
+  background: var(--color-surface-hover);
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Interactive states */
+.native-card.interactive {
+  cursor: pointer;
+}
+
+.native-card.interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.native-card.interactive.pressed,
+.native-card.interactive:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.native-card.selected {
+  border-color: var(--color-primary);
+  box-shadow: 
+    0 0 0 1px var(--color-primary),
+    0 4px 6px -1px rgba(212, 255, 153, 0.1),
+    0 2px 4px -1px rgba(212, 255, 153, 0.06);
+}
+
+.native-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Card header */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-8) var(--space-10);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.card-avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-surface-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: var(--text-headline);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-subtitle {
+  font-size: var(--text-footnote);
+  color: var(--color-text-secondary);
+  margin: var(--space-1) 0 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-trailing {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* Card content */
+.card-content {
+  padding: var(--space-8) var(--space-10);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+}
+
+.card-content:first-child {
+  padding-top: var(--space-10);
+}
+
+.card-content:last-child {
+  padding-bottom: var(--space-10);
+}
+
+/* Card actions */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-10) var(--space-8);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.card-actions.start {
+  justify-content: flex-start;
+}
+
+.card-actions.center {
+  justify-content: center;
+}
+
+.card-actions.end {
+  justify-content: flex-end;
+}
+
+.card-actions.space-between {
+  justify-content: space-between;
+}
+
+/* Specialized card types */
+.workout-card {
+  background: linear-gradient(135deg, var(--color-surface), var(--color-surface-hover));
+  border: 1px solid var(--color-border-subtle);
+}
+
+.workout-card.completed {
+  background: linear-gradient(135deg, 
+    rgba(var(--color-primary-rgb), 0.1), 
+    rgba(var(--color-primary-rgb), 0.05)
+  );
+  border-color: rgba(var(--color-primary-rgb), 0.3);
+}
+
+.exercise-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  margin-bottom: var(--space-4);
+}
+
+.exercise-card:last-child {
+  margin-bottom: 0;
+}
+
+.progress-card {
+  background: linear-gradient(135deg, 
+    var(--color-surface), 
+    var(--color-surface-hover)
+  );
+  border: 1px solid var(--color-border-subtle);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-info));
+  opacity: 0.8;
+}
+
+/* Card loading state */
+.native-card.loading {
+  pointer-events: none;
+}
+
+.native-card.loading .card-content {
+  position: relative;
+}
+
+.native-card.loading .card-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  animation: card-shimmer 1.5s infinite;
+}
+
+@keyframes card-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Card groups */
+.card-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.card-grid {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .card-header {
+    padding: var(--space-6) var(--space-8);
+  }
+  
+  .card-content {
+    padding: var(--space-6) var(--space-8);
+  }
+  
+  .card-actions {
+    padding: var(--space-4) var(--space-8) var(--space-6);
+  }
+  
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark mode specific shadows */
+@media (prefers-color-scheme: dark) {
+  .native-card.elevated {
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 2px 4px -1px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  
+  .native-card.interactive:hover {
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.3),
+      0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Reduce motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .native-card {
+    transition: none;
+  }
+  
+  .native-card.interactive:hover {
+    transform: none;
+  }
+  
+  .native-card.interactive.pressed,
+  .native-card.interactive:active {
+    transform: none;
+  }
+  
+  .card-content::after {
+    animation: none;
+  }
+}

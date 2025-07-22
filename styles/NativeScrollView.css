@@ -1,0 +1,202 @@
+.native-scroll-container {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.native-scroll-view {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior-y: contain;
+  
+  /* Hide scrollbars */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.native-scroll-view::-webkit-scrollbar {
+  display: none;
+}
+
+/* Bounce effect for iOS-like scrolling */
+.native-scroll-view.bounces {
+  overscroll-behavior-y: auto;
+}
+
+/* Momentum scrolling enhancement */
+.native-scroll-view.scrolling {
+  scroll-snap-type: none;
+}
+
+/* Pull to refresh indicator */
+.pull-refresh-indicator {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  transition: all var(--transition-native);
+}
+
+.refresh-spinner {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 50%;
+  transition: all var(--transition-native);
+}
+
+.pull-refresh-indicator.can-refresh .refresh-spinner {
+  background: var(--color-primary);
+}
+
+.spinner-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+  transition: all var(--transition-native);
+}
+
+.pull-refresh-indicator.can-refresh .spinner-dot {
+  background: var(--color-text-inverse);
+}
+
+.refresh-spinner.spinning .spinner-dot {
+  animation: spinner-bounce 1.4s infinite ease-in-out;
+}
+
+.refresh-spinner.spinning .spinner-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.refresh-spinner.spinning .spinner-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes spinner-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Custom scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  right: 2px;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.scroll-indicator.visible {
+  opacity: 1;
+}
+
+/* Enhanced scrolling physics */
+.native-scroll-view {
+  scroll-snap-type: y proximity;
+  overscroll-behavior: contain;
+}
+
+/* Smooth deceleration */
+.native-scroll-view:not(.scrolling) {
+  scroll-behavior: smooth;
+}
+
+/* iOS-style rubber band effect */
+@supports (-webkit-overflow-scrolling: touch) {
+  .native-scroll-view.bounces {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: auto;
+  }
+}
+
+/* Fade out effect at edges */
+.native-scroll-view::before,
+.native-scroll-view::after {
+  content: '';
+  position: sticky;
+  display: block;
+  height: 20px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.native-scroll-view::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--color-background), transparent);
+  margin-bottom: -20px;
+}
+
+.native-scroll-view::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--color-background), transparent);
+  margin-top: -20px;
+}
+
+/* Enhanced touch scrolling */
+.native-scroll-view {
+  touch-action: pan-y;
+}
+
+/* Disable fade effect when not needed */
+.native-scroll-view.no-fade::before,
+.native-scroll-view.no-fade::after {
+  display: none;
+}
+
+/* Scroll snap points for cards/sections */
+.scroll-snap-start {
+  scroll-snap-align: start;
+}
+
+.scroll-snap-center {
+  scroll-snap-align: center;
+}
+
+.scroll-snap-end {
+  scroll-snap-align: end;
+}
+
+/* Performance optimizations */
+.native-scroll-view * {
+  will-change: auto;
+}
+
+.native-scroll-view.scrolling * {
+  will-change: transform;
+}
+
+/* Reduce motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .native-scroll-view {
+    scroll-behavior: auto;
+  }
+  
+  .pull-refresh-indicator,
+  .refresh-spinner {
+    transition: none;
+  }
+  
+  .refresh-spinner.spinning .spinner-dot {
+    animation: none;
+  }
+}

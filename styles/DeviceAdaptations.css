@@ -1,0 +1,318 @@
+/* Device-specific adaptations */
+.device-adaptation {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* iOS-specific styles */
+.ios-device {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ios-device input,
+.ios-device textarea {
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+/* Android-specific styles */
+.android-device {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Mobile device optimizations */
+.mobile-device {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Standalone PWA styles */
+.standalone-app {
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+/* Notch adaptations */
+.has-notch {
+  --notch-height: env(safe-area-inset-top, 44px);
+}
+
+.has-notch .navigation-header {
+  padding-top: var(--notch-height);
+}
+
+/* Dynamic Island adaptations */
+.has-dynamic-island {
+  --dynamic-island-height: 37px;
+  --dynamic-island-width: 126px;
+}
+
+.dynamic-island-space {
+  position: fixed;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--dynamic-island-width);
+  height: var(--dynamic-island-height);
+  background: #000;
+  border-radius: 19px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* Status bar */
+.status-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(env(safe-area-inset-top, 20px) + 24px);
+  z-index: var(--z-fixed);
+  pointer-events: none;
+}
+
+.status-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 24px;
+  margin-top: env(safe-area-inset-top, 20px);
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.status-time {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+
+.status-indicators {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.signal-indicator {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.signal-bar {
+  width: 3px;
+  background: var(--color-text-primary);
+  border-radius: 1px;
+}
+
+.signal-bar:nth-child(1) { height: 4px; }
+.signal-bar:nth-child(2) { height: 6px; }
+.signal-bar:nth-child(3) { height: 8px; }
+.signal-bar:nth-child(4) { height: 10px; }
+
+.wifi-indicator {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.battery-indicator {
+  width: 24px;
+  height: 12px;
+  border: 1px solid var(--color-text-primary);
+  border-radius: 2px;
+  position: relative;
+  opacity: 0.9;
+}
+
+.battery-indicator::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 3px;
+  width: 2px;
+  height: 6px;
+  background: var(--color-text-primary);
+  border-radius: 0 1px 1px 0;
+}
+
+.battery-level {
+  height: 100%;
+  width: 80%;
+  background: var(--color-primary);
+  border-radius: 1px;
+}
+
+/* Safe area utility classes */
+.safe-area {
+  position: relative;
+}
+
+.safe-area.safe-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.safe-area.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.safe-area.safe-left {
+  padding-left: env(safe-area-inset-left, 0);
+}
+
+.safe-area.safe-right {
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+/* Home indicator */
+.home-indicator {
+  position: fixed;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
+  z-index: var(--z-fixed);
+  pointer-events: none;
+}
+
+/* Device-specific viewport adjustments */
+@media screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+  /* iPhone XR, 11 */
+  .has-notch .navigation-header {
+    padding-top: 44px;
+  }
+}
+
+@media screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
+  /* iPhone X, XS, 11 Pro */
+  .has-notch .navigation-header {
+    padding-top: 44px;
+  }
+}
+
+@media screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) {
+  /* iPhone XS Max, 11 Pro Max */
+  .has-notch .navigation-header {
+    padding-top: 44px;
+  }
+}
+
+@media screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
+  /* iPhone 12, 12 Pro */
+  .has-notch .navigation-header {
+    padding-top: 47px;
+  }
+}
+
+@media screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) {
+  /* iPhone 12 Pro Max */
+  .has-notch .navigation-header {
+    padding-top: 47px;
+  }
+}
+
+@media screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) {
+  /* iPhone 14 Pro */
+  .has-dynamic-island .navigation-header {
+    padding-top: 54px;
+  }
+}
+
+@media screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
+  /* iPhone 14 Pro Max */
+  .has-dynamic-island .navigation-header {
+    padding-top: 54px;
+  }
+}
+
+/* Landscape adaptations */
+@media screen and (orientation: landscape) {
+  .has-notch,
+  .has-dynamic-island {
+    --notch-height: env(safe-area-inset-top, 0);
+  }
+  
+  .dynamic-island-space {
+    display: none;
+  }
+  
+  .home-indicator {
+    right: 8px;
+    bottom: 50%;
+    transform: translateY(50%) rotate(90deg);
+    width: 5px;
+    height: 134px;
+  }
+}
+
+/* Android navigation adaptations */
+.android-device .navigation-header {
+  padding-top: env(safe-area-inset-top, 24px);
+}
+
+/* PWA display mode adaptations */
+@media (display-mode: standalone) {
+  .device-adaptation {
+    padding-top: 0;
+  }
+  
+  .status-bar {
+    display: block;
+  }
+}
+
+@media (display-mode: fullscreen) {
+  .status-bar {
+    display: none;
+  }
+}
+
+/* Tablet adaptations */
+@media (min-width: 768px) {
+  .mobile-device .navigation-header {
+    padding-top: env(safe-area-inset-top, 20px);
+  }
+  
+  .dynamic-island-space,
+  .home-indicator {
+    display: none;
+  }
+}
+
+/* High refresh rate displays */
+@media (min-resolution: 120dpi) {
+  .device-adaptation * {
+    transition-duration: calc(var(--transition-base) * 0.8);
+  }
+}
+
+/* Accessibility adaptations */
+@media (prefers-reduced-motion: reduce) {
+  .device-adaptation * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .status-bar-content {
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .signal-bar,
+  .battery-indicator {
+    border-color: var(--color-text-primary);
+  }
+  
+  .home-indicator {
+    background: var(--color-text-primary);
+  }
+}
