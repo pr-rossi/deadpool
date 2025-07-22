@@ -3,7 +3,7 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
+  "/api/progress": "pages/api/progress.js",
   "/login": "pages/login.js",
-  "/api/auth/login": "pages/api/auth/login.js",
-  "/api/progress": "pages/api/progress.js"
+  "/api/auth/login": "pages/api/auth/login.js"
 }

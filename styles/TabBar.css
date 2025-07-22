@@ -1,0 +1,105 @@
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 85px;
+  background: rgba(10, 10, 11, 0.95);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+  z-index: var(--z-fixed);
+  transition: transform var(--transition-base);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-item::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  background: var(--color-primary);
+  border-radius: 18px;
+  opacity: 0;
+  scale: 0.8;
+  transition: all var(--transition-base) cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: -1;
+}
+
+.tab-item.active::before {
+  opacity: 0.15;
+  scale: 1;
+}
+
+.tab-item:active {
+  scale: 0.92;
+  transition: scale 100ms ease;
+}
+
+.tab-icon {
+  font-size: 24px;
+  transition: all var(--transition-fast);
+}
+
+.tab-item.active .tab-icon {
+  color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.tab-label {
+  font-size: 11px;
+  font-weight: var(--font-medium);
+  letter-spacing: 0.01em;
+  transition: all var(--transition-fast);
+}
+
+.tab-item.active .tab-label {
+  color: var(--color-primary);
+  font-weight: var(--font-semibold);
+}
+
+/* iOS-style haptic feedback simulation */
+@media (hover: none) and (pointer: coarse) {
+  .tab-item:active {
+    animation: haptic 150ms ease-out;
+  }
+}
+
+@keyframes haptic {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+/* Adjust content padding when tab bar is present */
+.container {
+  padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px));
+}
+
+/* Hide tab bar during certain states */
+.tab-bar.hidden {
+  transform: translateY(100%);
+}

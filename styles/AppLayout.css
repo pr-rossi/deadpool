@@ -1,0 +1,139 @@
+.app-layout {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  background: var(--color-background);
+}
+
+/* Native-style status bar */
+.status-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background: rgba(10, 10, 11, 0.01);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  z-index: var(--z-fixed);
+  transition: all var(--transition-base);
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.status-bar.scrolled {
+  background: rgba(10, 10, 11, 0.85);
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.status-indicators {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.status-signal,
+.status-wifi,
+.status-battery {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* App content with safe areas */
+.app-content {
+  padding-top: calc(44px + env(safe-area-inset-top, 0));
+  min-height: 100vh;
+  transition: transform var(--transition-fast);
+}
+
+/* Smooth scroll behavior */
+.app-content.scrolling {
+  will-change: transform;
+}
+
+/* Overscroll bounce effect for iOS feel */
+@supports (-webkit-overflow-scrolling: touch) {
+  .app-layout {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Pull-to-refresh container */
+.pull-to-refresh {
+  position: absolute;
+  top: calc(44px + env(safe-area-inset-top, 0));
+  left: 50%;
+  transform: translateX(-50%) translateY(-60px);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.pull-to-refresh.visible {
+  transform: translateX(-50%) translateY(20px);
+}
+
+.pull-to-refresh.refreshing {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: translateX(-50%) translateY(20px) rotate(0deg); }
+  to { transform: translateX(-50%) translateY(20px) rotate(360deg); }
+}
+
+/* Native-style page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all var(--transition-base) ease-out;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-30%);
+  transition: all var(--transition-base) ease-in;
+}
+
+/* Disable text selection for native feel */
+.app-layout * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection in specific areas */
+.app-layout input,
+.app-layout textarea,
+.app-layout [contenteditable="true"],
+.app-layout .selectable {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}

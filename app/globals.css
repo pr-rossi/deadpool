@@ -1,5 +1,6 @@
 /* Import Design System */
 @import '../styles/design-system.css';
+@import '../styles/haptics.css';
 
 /* Reset and base styles */
 * {
@@ -20,6 +21,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  overscroll-behavior: contain;
+  overflow-x: hidden;
+  position: relative;
 }
 
 .container {
@@ -45,7 +51,7 @@ body {
 }
 
 .list-item-v2 {
-  padding: var(--space-md);
+  padding: var(--space-8) var(--space-12);
   background-color: var(--color-surface);
   display: flex;
   flex-direction: row;
@@ -57,20 +63,28 @@ body {
   color: var(--color-text-primary);
   cursor: pointer;
   text-align: left;
-  transition: all var(--transition-base);
+  transition: all var(--transition-native);
   position: relative;
   overflow: hidden;
+  min-height: var(--touch-target-min);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .list-item-v2:hover {
   background-color: var(--color-surface-hover);
   border-color: var(--color-border);
-  transform: translateX(4px);
+}
+
+.list-item-v2:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+  transition: all 100ms ease;
 }
 
 .item-text-v2 {
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: var(--text-body);
+  font-weight: var(--font-normal);
+  line-height: 1.4;
 }
 
 .chevron-v2 {
@@ -100,22 +114,29 @@ body {
 .nav-button, .nav-button.next {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-4);
   background: var(--color-surface);
   border: 1px solid var(--color-border-subtle);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-6) var(--space-8);
   border-radius: var(--radius-lg);
   color: var(--color-text-primary);
-  font-size: var(--text-base);
+  font-size: var(--text-callout);
   font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-native);
+  min-height: var(--touch-target-min);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-button:hover, .nav-button.next:hover {
   background: var(--color-surface-hover);
   border-color: var(--color-border);
-  transform: translateY(-1px);
+}
+
+.nav-button:active, .nav-button.next:active {
+  transform: scale(0.96);
+  opacity: 0.8;
+  transition: all 100ms ease;
 }
 
 .nav-button svg {
@@ -188,21 +209,27 @@ body {
   color: var(--color-text-inverse);
   border: none;
   border-radius: var(--radius-lg);
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-6) var(--space-12);
   width: auto;
   display: flex;
   align-items: center;
-  font-size: var(--text-base);
+  font-size: var(--text-callout);
   font-weight: var(--font-semibold);
   cursor: pointer;
-  gap: var(--space-sm);
-  transition: all var(--transition-fast);
+  gap: var(--space-4);
+  transition: all var(--transition-native);
+  min-height: var(--touch-target-min);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .watch-button:hover {
   background: var(--color-primary-dark);
-  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.watch-button:active {
+  transform: scale(0.96);
+  transition: all 100ms ease;
 }
 
 /* Exercise completion styles */
@@ -392,23 +419,29 @@ body {
 }
 
 .login-button {
-  margin-top: var(--space-md);
-  padding: var(--space-md);
+  margin-top: var(--space-8);
+  padding: var(--space-8) var(--space-12);
   background-color: var(--color-primary);
   color: var(--color-text-inverse);
   border: none;
   border-radius: var(--radius-lg);
-  font-size: var(--text-base);
+  font-size: var(--text-callout);
   font-weight: var(--font-semibold);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-native);
   width: 100%;
+  min-height: var(--touch-target-min);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .login-button:hover {
   background-color: var(--color-primary-dark);
-  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.login-button:active {
+  transform: scale(0.98);
+  transition: all 100ms ease;
 }
 
 .error-message {
@@ -506,4 +539,152 @@ body {
   color: #A6A6A6;
   margin-bottom: 1.5rem;
   text-align: left;
+}
+
+/* Native App Interactions */
+button, 
+a, 
+.touchable {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Haptic feedback simulation */
+@media (hover: none) and (pointer: coarse) {
+  button:active,
+  a:active,
+  .touchable:active {
+    animation: haptic-feedback 150ms ease-out;
+  }
+}
+
+@keyframes haptic-feedback {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+/* iOS rubber band scrolling */
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* Disable pull-to-refresh on specific elements */
+.no-bounce {
+  overscroll-behavior-y: contain;
+}
+
+/* Native-style switches and toggles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 51px;
+  height: 31px;
+  background-color: rgba(120, 120, 128, 0.16);
+  border-radius: 31px;
+  transition: background-color 200ms ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.switch.active {
+  background-color: var(--color-primary);
+}
+
+.switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 200ms ease;
+}
+
+.switch.active .switch-knob {
+  transform: translateX(20px);
+}
+
+/* Native-style segmented control */
+.segmented-control {
+  display: flex;
+  background: rgba(118, 118, 128, 0.12);
+  border-radius: 9px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.segment {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 7px;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-weight: var(--font-semibold);
+  transition: all 200ms ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.segment.active {
+  background: var(--color-surface);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Safe area padding for notched devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 20px);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* Native-style list separators */
+.list-separator {
+  height: 0.5px;
+  background: rgba(60, 60, 67, 0.36);
+  margin-left: 16px;
+}
+
+/* iOS-style activity indicator */
+.activity-indicator {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--color-primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Prevent text selection by default */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection where needed */
+input,
+textarea,
+[contenteditable="true"],
+.selectable {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 } 

@@ -1,0 +1,124 @@
+.sheet-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: var(--z-modal-backdrop);
+  transition: background-color var(--transition-base);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sheet-backdrop.open {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border-radius: 12px 12px 0 0;
+  transform: translateY(100%);
+  transition: transform var(--transition-base) cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: var(--z-modal);
+  max-height: 94vh;
+  display: flex;
+  flex-direction: column;
+  touch-action: pan-y;
+}
+
+.sheet.open {
+  transform: translateY(0);
+}
+
+.sheet.full-height {
+  height: 94vh;
+}
+
+/* Sheet handle for dragging */
+.sheet-handle-container {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 4px;
+  cursor: grab;
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 100px;
+}
+
+/* Sheet header */
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px 16px;
+  border-bottom: 0.5px solid var(--color-border-subtle);
+}
+
+.sheet-title {
+  font-size: 17px;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.sheet-close {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 17px;
+  font-weight: var(--font-medium);
+  padding: 4px 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sheet-close:active {
+  opacity: 0.7;
+}
+
+/* Sheet content */
+.sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0));
+}
+
+/* Prevent background scroll when sheet is open */
+body.sheet-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* Sheet animation states */
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    transition: none;
+  }
+  
+  .sheet-backdrop {
+    transition: none;
+  }
+}
+
+/* Drag indicator */
+.sheet.dragging {
+  transition: none;
+}
+
+/* iOS-specific adjustments */
+@supports (-webkit-touch-callout: none) {
+  .sheet {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}

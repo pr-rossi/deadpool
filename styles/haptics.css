@@ -1,0 +1,135 @@
+/* Haptic Feedback Visual Effects */
+
+/* Light haptic feedback */
+.haptic-light {
+  animation: haptic-light-pulse 150ms ease-out;
+}
+
+@keyframes haptic-light-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Medium haptic feedback */
+.haptic-medium {
+  animation: haptic-medium-pulse 200ms ease-out;
+}
+
+@keyframes haptic-medium-pulse {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Heavy haptic feedback */
+.haptic-heavy {
+  animation: haptic-heavy-shake 250ms ease-out;
+}
+
+@keyframes haptic-heavy-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* Success haptic feedback */
+.haptic-success {
+  animation: haptic-success-bounce 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes haptic-success-bounce {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Warning haptic feedback */
+.haptic-warning {
+  animation: haptic-warning-wobble 300ms ease-out;
+}
+
+@keyframes haptic-warning-wobble {
+  0% { transform: rotate(0deg); }
+  15% { transform: rotate(-5deg); }
+  30% { transform: rotate(3deg); }
+  45% { transform: rotate(-3deg); }
+  60% { transform: rotate(2deg); }
+  75% { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Error haptic feedback */
+.haptic-error {
+  animation: haptic-error-shake 400ms ease-out;
+}
+
+@keyframes haptic-error-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* Selection haptic feedback */
+.haptic-selection {
+  animation: haptic-selection-highlight 100ms ease-out;
+}
+
+@keyframes haptic-selection-highlight {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Ripple effect for touch interactions */
+.haptic-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0);
+  animation: haptic-ripple-expand 300ms ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes haptic-ripple-expand {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Disable haptic effects for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .haptic-light,
+  .haptic-medium,
+  .haptic-heavy,
+  .haptic-success,
+  .haptic-warning,
+  .haptic-error,
+  .haptic-selection {
+    animation: none;
+  }
+  
+  .haptic-ripple {
+    display: none;
+  }
+}
+
+/* Enhanced touch feedback for mobile */
+@media (hover: none) and (pointer: coarse) {
+  button:active,
+  .touchable:active {
+    animation: haptic-light-pulse 100ms ease-out;
+  }
+  
+  button.primary:active {
+    animation: haptic-medium-pulse 150ms ease-out;
+  }
+}
