@@ -1,0 +1,103 @@
+.progress-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring-svg {
+  transform: rotate(-90deg);
+  animation: rotateIn var(--transition-slow) ease-out;
+}
+
+@keyframes rotateIn {
+  from {
+    transform: rotate(-90deg) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(-90deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.progress-ring-background {
+  fill: transparent;
+  stroke: var(--color-surface-active);
+  transition: stroke var(--transition-base);
+}
+
+.progress-ring-progress {
+  fill: transparent;
+  stroke: url(#progress-gradient);
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--transition-slow) ease-out;
+  animation: drawProgress 1s ease-out;
+}
+
+@keyframes drawProgress {
+  from {
+    stroke-dashoffset: 400;
+  }
+}
+
+.progress-ring-text {
+  position: absolute;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  animation: fadeIn var(--transition-base) ease-out 0.5s backwards;
+}
+
+.progress-percentage {
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.progress-percent-sign {
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  font-size: 0.7em;
+}
+
+.progress-ring.small .progress-percentage {
+  font-size: var(--text-sm);
+}
+
+.progress-ring.medium .progress-percentage {
+  font-size: var(--text-lg);
+}
+
+.progress-ring.large .progress-percentage {
+  font-size: var(--text-2xl);
+}
+
+/* Add gradient definition in components that use this */
+.progress-ring-svg defs {
+  animation: fadeIn var(--transition-base) ease-out;
+}
+
+/* Hover effects */
+.progress-ring:hover .progress-ring-svg {
+  transform: rotate(-90deg) scale(1.05);
+}
+
+.progress-ring:hover .progress-ring-progress {
+  filter: drop-shadow(0 0 8px rgba(var(--color-primary-rgb), 0.5));
+}
+
+/* Success state for 100% completion */
+.progress-ring[data-complete="true"] .progress-ring-progress {
+  stroke: var(--color-success);
+  animation: completeGlow 2s ease-in-out infinite;
+}
+
+@keyframes completeGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(76, 217, 100, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(76, 217, 100, 0.8));
+  }
+}

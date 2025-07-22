@@ -1,7 +1,13 @@
 .landing-container {
-    padding: 0 2rem;
+    padding: 0 var(--space-md);
     max-width: 1200px;
     margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .landing-container {
+        padding: 0 var(--space-xl);
+    }
 }
 
 .header-row {
@@ -17,10 +23,17 @@
 }
 
 .landing-header h1 {
-    font-size: 2.5rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #ffffff;
+    font-size: var(--text-3xl);
+    font-weight: var(--font-semibold);
+    margin-bottom: var(--space-sm);
+    color: var(--color-text-primary);
+    line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+    .landing-header h1 {
+        font-size: var(--text-4xl);
+    }
 }
 
 .subtitle {
@@ -31,22 +44,44 @@
 
 .plans-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+@media (min-width: 640px) {
+    .plans-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: var(--space-lg);
+    }
+}
+
+@media (min-width: 1024px) {
+    .plans-grid {
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    }
 }
 
 .plan-card {
     display: flex;
-    align-items: flex-start;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    background-color: #181B1F;
-    border: 1px solid #282D32;
-    border-radius: 16px;
-    color: #ffffff;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    color: var(--color-text-primary);
     text-align: left;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base);
+    animation: fadeIn var(--transition-base) ease-out;
+}
+
+@media (min-width: 640px) {
+    .plan-card {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: var(--space-lg);
+    }
 }
 
 .plan-card:hover {
