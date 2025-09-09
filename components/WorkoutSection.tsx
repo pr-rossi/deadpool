@@ -72,7 +72,7 @@ const WorkoutSection: React.FC<WorkoutSectionProps> = ({
                         <div className={styles.details}>
                             <div>Rounds: {exercise.fields.Rounds !== undefined ? exercise.fields.Rounds : "N/A"}</div>
                             <div>Reps: {exercise.fields.Reps || "N/A"}</div>
-                            <div>Rest: {exercise.fields.Rest || "N/A"} min</div>
+                            <div>Rest: {exercise.fields.Rest || "N/A"}</div>
                         </div>
                     </div>
                 ))}

@@ -79,7 +79,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({
                                 </div>
                                 <div className="metric-info">
                                     <span className="metric-label">Rest</span>
-                                    <span className="metric-value">{exercise.fields.Rest} min</span>
+                                    <span className="metric-value">{exercise.fields.Rest}</span>
                                 </div>
                             </div>
                         </div>
