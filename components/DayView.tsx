@@ -50,7 +50,8 @@ const DayView: React.FC<DayViewProps> = ({
             case '2': return 'Chest';
             case '3': return 'Arm Day';
             case '4': return 'Back Day';
-            default: return 'Shoulders & Abs';
+            case '5': return 'Shoulders & Abs';
+            default: return 'Unknown Day';
         }
     };
 
@@ -94,8 +95,7 @@ const DayView: React.FC<DayViewProps> = ({
                             >
                                 <div className="day-header">
                                     <div className="day-title">
-                                        <span className="day-number">Day {day}</span>
-                                        <span className="day-name">{getDayName(day)}</span>
+                                        <span className="day-number">{day}</span>
                                     </div>
                                     <FontAwesomeIcon icon={faChevronRight} className="chevron-icon" />
                                 </div>

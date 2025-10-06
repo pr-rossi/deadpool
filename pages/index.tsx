@@ -310,7 +310,8 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
             case '2': return 'Chest';
             case '3': return 'Arm Day';
             case '4': return 'Back Day';
-            default: return 'Shoulders & Abs';
+            case '5': return 'Shoulders & Abs';
+            default: return 'Unknown Day';
         }
     };
 
@@ -340,7 +341,14 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
                     title={
                         step === 'week' ? 'Select a week to begin' :
                         step === 'day' ? 'Select a day' :
-                        step === 'workout' ? `${selectedWorkoutDay}: ${getDayName(selectedWorkoutDay)}` :
+                        step === 'workout' ? (() => {
+                            // If selectedWorkoutDay already contains "Day", use it as is
+                            // Otherwise, format it as "Day X - WorkoutType"
+                            if (selectedWorkoutDay && selectedWorkoutDay.includes('Day')) {
+                                return selectedWorkoutDay;
+                            }
+                            return `Day ${selectedWorkoutDay} - ${getDayName(selectedWorkoutDay)}`;
+                        })() :
                         selectedExercise || ''
                     }
                     onLogout={handleLogout}
