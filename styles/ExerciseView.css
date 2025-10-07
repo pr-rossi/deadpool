@@ -46,8 +46,10 @@
     white-space: nowrap;
 }
 
-.complete-button:hover {
-    background-color: #282D32;
+@media (hover: hover) {
+    .complete-button:hover {
+        background-color: #282D32;
+    }
 }
 
 .complete-button.completed {
@@ -119,9 +121,11 @@
     transition: all 0.2s ease;
 }
 
-.watch-button:hover {
-    background-color: rgba(212, 255, 153, 1);
-    color: #181818;
+@media (hover: hover) {
+    .watch-button:hover {
+        background-color: rgba(212, 255, 153, 1);
+        color: #181818;
+    }
 }
 
 .watch-button svg {

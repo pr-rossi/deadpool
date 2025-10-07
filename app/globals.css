@@ -138,9 +138,11 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-.nav-button:hover, .nav-button.next:hover {
-  background: var(--color-surface-hover);
-  border-color: var(--color-border);
+@media (hover: hover) {
+  .nav-button:hover, .nav-button.next:hover {
+    background: var(--color-surface-hover);
+    border-color: var(--color-border);
+  }
 }
 
 .nav-button:active, .nav-button.next:active {
@@ -232,9 +234,11 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-.watch-button:hover {
-  background: var(--color-primary-dark);
-  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+@media (hover: hover) {
+  .watch-button:hover {
+    background: var(--color-primary-dark);
+    box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+  }
 }
 
 .watch-button:active {
@@ -309,8 +313,10 @@ body {
   color: #181B1F;
 }
 
-.complete-button:hover {
-  transform: scale(1.1);
+@media (hover: hover) {
+  .complete-button:hover {
+    transform: scale(1.1);
+  }
 }
 
 .reset-button {
@@ -326,8 +332,10 @@ body {
   transition: all 0.2s ease;
 }
 
-.reset-button:hover {
-  background: rgba(255, 59, 48, 0.2);
+@media (hover: hover) {
+  .reset-button:hover {
+    background: rgba(255, 59, 48, 0.2);
+  }
 }
 
 .progress-indicator {
@@ -444,9 +452,11 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-.login-button:hover {
-  background-color: var(--color-primary-dark);
-  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+@media (hover: hover) {
+  .login-button:hover {
+    background-color: var(--color-primary-dark);
+    box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+  }
 }
 
 .login-button:active {
@@ -489,8 +499,10 @@ body {
   transition: background-color 0.2s;
 }
 
-.logout-button:hover {
-  background-color: rgba(189, 49, 50, 1);
+@media (hover: hover) {
+  .logout-button:hover {
+    background-color: rgba(189, 49, 50, 1);
+  }
 }
 
 .logout-button svg {
@@ -559,6 +571,28 @@ a,
   touch-action: manipulation;
   cursor: pointer;
   position: relative;
+}
+
+/* Improve touch responsiveness on mobile */
+@media (hover: none) and (pointer: coarse) {
+  button, 
+  a, 
+  .touchable {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  
+  /* Ensure buttons are responsive to touch */
+  .complete-button,
+  .watch-button,
+  .nav-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }
 
 /* Haptic feedback simulation */

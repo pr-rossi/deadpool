@@ -30,13 +30,21 @@ const WeekView: React.FC<WeekViewProps> = ({
     onRestartPlan
 }) => {
     const getWeekProgress = (week: string) => {
-        const weekExercises = workoutData.filter(exercise => exercise.fields.WorkoutWeek === week);
+        const weekExercises = workoutData.filter(exercise => 
+            exercise.fields.WorkoutWeek === week &&
+            exercise.fields.Group !== 'Warm up' && 
+            exercise.fields.Group !== 'Optional Core Circuit'
+        );
         const completedCount = weekExercises.filter(exercise => completedExercises.has(exercise.id)).length;
         return weekExercises.length > 0 ? (completedCount / weekExercises.length) * 100 : 0;
     };
 
     const isWeekCompleted = (week: string) => {
-        const weekExercises = workoutData.filter(exercise => exercise.fields.WorkoutWeek === week);
+        const weekExercises = workoutData.filter(exercise => 
+            exercise.fields.WorkoutWeek === week &&
+            exercise.fields.Group !== 'Warm up' && 
+            exercise.fields.Group !== 'Optional Core Circuit'
+        );
         return weekExercises.length > 0 && weekExercises.every(exercise => completedExercises.has(exercise.id));
     };
 

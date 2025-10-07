@@ -48,8 +48,13 @@ const LandingPage: React.FC<LandingPageProps> = ({
 
     const calculateProgress = () => {
         if (workoutData.length === 0) return 0;
-        const completedCount = workoutData.filter(exercise => completedExercises.has(exercise.id)).length;
-        return Math.round((completedCount / workoutData.length) * 100);
+        // Filter out Warm up and Optional Core Circuit groups
+        const filteredExercises = workoutData.filter(exercise => 
+            exercise.fields.Group !== 'Warm up' && 
+            exercise.fields.Group !== 'Optional Core Circuit'
+        );
+        const completedCount = filteredExercises.filter(exercise => completedExercises.has(exercise.id)).length;
+        return Math.round((completedCount / filteredExercises.length) * 100);
     };
 
     return (

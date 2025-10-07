@@ -31,7 +31,10 @@ const DayView: React.FC<DayViewProps> = ({
 }) => {
     const getDayProgress = (day: string) => {
         const dayExercises = workoutData.filter(
-            data => data.fields.WorkoutWeek === selectedWorkoutWeek && data.fields.WorkoutDay === day
+            data => data.fields.WorkoutWeek === selectedWorkoutWeek && 
+                   data.fields.WorkoutDay === day &&
+                   data.fields.Group !== 'Warm up' && 
+                   data.fields.Group !== 'Optional Core Circuit'
         );
         const completedCount = dayExercises.filter(exercise => completedExercises.has(exercise.id)).length;
         return dayExercises.length > 0 ? (completedCount / dayExercises.length) * 100 : 0;
@@ -39,7 +42,10 @@ const DayView: React.FC<DayViewProps> = ({
 
     const isDayCompleted = (day: string) => {
         const dayExercises = workoutData.filter(
-            data => data.fields.WorkoutWeek === selectedWorkoutWeek && data.fields.WorkoutDay === day
+            data => data.fields.WorkoutWeek === selectedWorkoutWeek && 
+                   data.fields.WorkoutDay === day &&
+                   data.fields.Group !== 'Warm up' && 
+                   data.fields.Group !== 'Optional Core Circuit'
         );
         return dayExercises.length > 0 && dayExercises.every(exercise => completedExercises.has(exercise.id));
     };
