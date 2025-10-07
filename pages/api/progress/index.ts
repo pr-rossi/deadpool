@@ -1,14 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import Airtable from 'airtable';
-
-const apiKey = process.env.AIRTABLE_TOKEN;
-const baseId = process.env.AIRTABLE_BASE_ID;
-
-if (!apiKey || !baseId) {
-  throw new Error('Airtable API key or base ID is not set in environment variables');
-}
-
-const base = new Airtable({ apiKey }).base(baseId);
+import { githubDb } from '../../../src/services/githubDatabase';
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,29 +13,37 @@ export default async function handler(
         return res.status(400).json({ message: 'User ID and Exercise ID are required' });
       }
 
-      // Create or update progress record
-      const records = await base('Progress')
-        .select({
-          filterByFormula: `AND({userId} = '${userId}', {exerciseId} = '${exerciseId}')`,
-        })
-        .firstPage();
+      // Check if progress record already exists
+      const existingProgress = await githubDb.getProgressByUserAndExercise(userId, exerciseId);
 
-      if (records.length > 0) {
+      if (existingProgress) {
         // Update existing record
-        await records[0].updateFields({
-          completed: completed,
+        await githubDb.updateProgress(existingProgress.id, {
+          completed: completed ? 'checked' : '',
+          lastUpdated: new Date().toLocaleString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          })
         });
       } else {
         // Create new record
-        await base('Progress').create([
-          {
-            fields: {
-              userId,
-              exerciseId,
-              completed,
-            },
-          },
-        ]);
+        await githubDb.createProgress({
+          userId,
+          exerciseId,
+          completed: completed ? 'checked' : '',
+          lastUpdated: new Date().toLocaleString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          })
+        });
       }
 
       return res.status(200).json({ message: 'Progress updated successfully' });
@@ -56,16 +55,12 @@ export default async function handler(
       }
 
       // Get all progress records for a user
-      const records = await base('Progress')
-        .select({
-          filterByFormula: `{userId} = '${userId}'`,
-        })
-        .all();
+      const progressRecords = await githubDb.getProgressByUserId(userId);
 
-      const progress = records.map(record => ({
-        exerciseId: record.fields.exerciseId,
-        completed: record.fields.completed,
-        lastUpdated: record._rawJson.lastModifiedTime, // Use Airtable's Last modified time
+      const progress = progressRecords.map(record => ({
+        exerciseId: record.exerciseId,
+        completed: record.completed === 'checked',
+        lastUpdated: record.lastUpdated,
       }));
 
       return res.status(200).json({ progress });

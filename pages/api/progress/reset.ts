@@ -1,14 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import Airtable from 'airtable';
-
-const apiKey = process.env.AIRTABLE_TOKEN;
-const baseId = process.env.AIRTABLE_BASE_ID;
-
-if (!apiKey || !baseId) {
-  throw new Error('Airtable API key or base ID is not set in environment variables');
-}
-
-const base = new Airtable({ apiKey }).base(baseId);
+import { githubDb } from '../../../src/services/githubDatabase';
 
 export default async function handler(
   req: NextApiRequest,
@@ -26,21 +17,11 @@ export default async function handler(
     }
 
     // Get all progress records for the user
-    const records = await base('Progress')
-      .select({
-        filterByFormula: `{userId} = '${userId}'`
-      })
-      .all();
+    const records = await githubDb.getProgressByUserId(userId);
 
     // Delete all progress records for the user
-    if (records.length > 0) {
-      const recordIds = records.map(record => record.id);
-      
-      // Airtable only allows deleting 10 records at a time
-      for (let i = 0; i < recordIds.length; i += 10) {
-        const batch = recordIds.slice(i, i + 10);
-        await base('Progress').destroy(batch);
-      }
+    for (const record of records) {
+      await githubDb.deleteProgress(record.id);
     }
 
     return res.status(200).json({ message: 'Progress reset successfully' });

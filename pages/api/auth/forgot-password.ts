@@ -1,16 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import Airtable from 'airtable';
 import crypto from 'crypto';
 import { rateLimit } from '../../../utils/rateLimit';
-
-const apiKey = process.env.AIRTABLE_TOKEN;
-const baseId = process.env.AIRTABLE_BASE_ID;
-
-if (!apiKey || !baseId) {
-  throw new Error('Missing Airtable configuration');
-}
-
-const base = new Airtable({ apiKey }).base(baseId);
+import { githubDb } from '../../../src/services/githubDatabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -32,27 +23,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Find user by email
-    const records = await base('Users')
-      .select({
-        filterByFormula: `{email} = '${email}'`,
-      })
-      .firstPage();
+    const user = await githubDb.getUserByEmail(email);
 
-    if (records.length === 0) {
+    if (!user) {
       // Don't reveal if email exists or not for security
       return res.status(200).json({ message: 'If an account exists with this email, you will receive password reset instructions.' });
     }
-
-    const user = records[0];
     
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+    const resetTokenExpiry = new Date(Date.now() + 3600000).toISOString(); // 1 hour from now
 
     // Update user record with reset token
-    await base('Users').update(user.id, {
+    await githubDb.updateUser(user.id, {
       resetToken,
-      resetTokenExpiry: resetTokenExpiry.toISOString().split('T')[0], // Format as YYYY-MM-DD
+      resetTokenExpiry,
     });
 
     // Generate reset link
@@ -70,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         body: JSON.stringify({
           to: email,
           resetLink,
-          userName: user.fields.name || 'there',
+          userName: user.name || 'there',
         }),
       });
 

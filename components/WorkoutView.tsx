@@ -32,10 +32,29 @@ const WorkoutView: React.FC<WorkoutViewProps> = ({
         return `${exercises.length} exercise${exercises.length !== 1 ? 's' : ''}`;
     };
 
+    // Sort exercise groups in the correct order
+    const getGroupOrder = (groupName: string): number => {
+        if (groupName === 'Warm up') return 0;
+        if (groupName === 'Optional Core Circuit') return 999; // Last
+        
+        // Extract number from "Exercise 1", "Exercise 2", etc.
+        const match = groupName.match(/Exercise (\d+)/);
+        if (match) {
+            return parseInt(match[1], 10);
+        }
+        
+        // For any other groups, put them after exercises but before Optional Core Circuit
+        return 100;
+    };
+
+    const sortedGroupEntries = Object.entries(groupedExercises).sort(([a], [b]) => {
+        return getGroupOrder(a) - getGroupOrder(b);
+    });
+
     return (
         <>
             <div className="workout-grid">
-                {Object.entries(groupedExercises).map(([groupName, exercises]) => {
+                {sortedGroupEntries.map(([groupName, exercises]) => {
                     const progress = getGroupProgress(exercises);
                     return (
                         <button
