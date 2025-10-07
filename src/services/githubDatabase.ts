@@ -1,8 +1,5 @@
-import fs from 'fs/promises';
-import path from 'path';
-
-// Database paths
-const DB_PATH = '/Users/michaelrossi/Development/Github/workout-database/data';
+// GitHub Database Service - Fetches data from GitHub API
+// Repository: https://github.com/pushrefresh/workout-database
 
 export interface GitHubUser {
   name: string;
@@ -31,47 +28,67 @@ export interface GitHubWorkout {
 }
 
 export interface GitHubProgress {
+  id: string;
   userId: string;
   exerciseId: string;
-  completed: string;
+  completed: string; // "checked" or empty string
   lastUpdated: string;
-  id: string;
   created_at: string;
   updated_at: string;
 }
 
 class GitHubDatabase {
-  private async readJsonFile<T>(filePath: string): Promise<T> {
-    try {
-      const data = await fs.readFile(filePath, 'utf-8');
-      return JSON.parse(data);
-    } catch (error) {
-      console.error(`Error reading file ${filePath}:`, error);
-      throw error;
-    }
-  }
+  private baseUrl = 'https://api.github.com/repos/pushrefresh/workout-database/contents/data';
+  private token = process.env.GITHUB_TOKEN; // You'll need to set this in Vercel
 
-  private async readAllJsonFiles<T>(dirPath: string): Promise<T[]> {
+  private async fetchFromGitHub(path: string): Promise<any[]> {
     try {
-      const files = await fs.readdir(dirPath);
-      const jsonFiles = files.filter(file => file.endsWith('.json'));
-      
-      const data = await Promise.all(
-        jsonFiles.map(file => 
-          this.readJsonFile<T>(path.join(dirPath, file))
-        )
-      );
-      
-      return data;
+      const response = await fetch(`${this.baseUrl}/${path}`, {
+        headers: {
+          'Authorization': `token ${this.token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'deadpool-app'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+      }
+
+      const files = await response.json();
+      const results: any[] = [];
+
+      for (const file of files) {
+        if (file.type === 'file' && file.name.endsWith('.json')) {
+          try {
+            const fileResponse = await fetch(file.download_url, {
+              headers: {
+                'Authorization': `token ${this.token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'User-Agent': 'deadpool-app'
+              }
+            });
+            
+            if (fileResponse.ok) {
+              const data = await fileResponse.json();
+              results.push(data);
+            }
+          } catch (error) {
+            console.error(`Error fetching file ${file.name}:`, error);
+          }
+        }
+      }
+
+      return results;
     } catch (error) {
-      console.error(`Error reading directory ${dirPath}:`, error);
-      throw error;
+      console.error('Error fetching from GitHub:', error);
+      return [];
     }
   }
 
   // Users
   async getAllUsers(): Promise<GitHubUser[]> {
-    return this.readAllJsonFiles<GitHubUser>(path.join(DB_PATH, 'users-grid view'));
+    return this.fetchFromGitHub('users-grid view');
   }
 
   async getUserByEmail(email: string): Promise<GitHubUser | null> {
@@ -85,41 +102,20 @@ class GitHubDatabase {
   }
 
   async createUser(userData: Omit<GitHubUser, 'id' | 'created_at' | 'updated_at'>): Promise<GitHubUser> {
-    const id = `users-grid view_${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const now = new Date().toISOString();
-    
-    const newUser: GitHubUser = {
-      ...userData,
-      id,
-      created_at: now,
-      updated_at: now
-    };
-
-    const filePath = path.join(DB_PATH, 'users-grid view', `${id}.json`);
-    await fs.writeFile(filePath, JSON.stringify(newUser, null, 2));
-    
-    return newUser;
+    // Note: Creating users via GitHub API requires more complex implementation
+    // For now, this is a placeholder that would need GitHub API file creation
+    throw new Error('User creation not implemented for GitHub API');
   }
 
   async updateUser(id: string, updates: Partial<GitHubUser>): Promise<GitHubUser | null> {
-    const user = await this.getUserById(id);
-    if (!user) return null;
-
-    const updatedUser = {
-      ...user,
-      ...updates,
-      updated_at: new Date().toISOString()
-    };
-
-    const filePath = path.join(DB_PATH, 'users-grid view', `${id}.json`);
-    await fs.writeFile(filePath, JSON.stringify(updatedUser, null, 2));
-    
-    return updatedUser;
+    // Note: Updating users via GitHub API requires more complex implementation
+    // For now, this is a placeholder that would need GitHub API file updates
+    throw new Error('User updates not implemented for GitHub API');
   }
 
   // Workouts
   async getAllWorkouts(): Promise<GitHubWorkout[]> {
-    return this.readAllJsonFiles<GitHubWorkout>(path.join(DB_PATH, 'workout-grid view'));
+    return this.fetchFromGitHub('workout-grid view');
   }
 
   async getWorkoutsByWeek(week: string): Promise<GitHubWorkout[]> {
@@ -134,9 +130,10 @@ class GitHubDatabase {
     );
   }
 
-  // Progress
+  // Progress - Note: These methods are read-only for GitHub API
+  // Progress updates would need to be handled differently (local storage, separate API, etc.)
   async getAllProgress(): Promise<GitHubProgress[]> {
-    return this.readAllJsonFiles<GitHubProgress>(path.join(DB_PATH, 'progress-grid view'));
+    return this.fetchFromGitHub('progress-grid view');
   }
 
   async getProgressByUserId(userId: string): Promise<GitHubProgress[]> {
@@ -154,49 +151,17 @@ class GitHubDatabase {
     return progress.find(p => p.userId === userId && p.exerciseId === exerciseId) || null;
   }
 
+  // These methods are not supported with GitHub API read-only access
   async createProgress(progressData: Omit<GitHubProgress, 'id' | 'created_at' | 'updated_at'>): Promise<GitHubProgress> {
-    const id = `progress-grid view_${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const now = new Date().toISOString();
-    
-    const newProgress: GitHubProgress = {
-      ...progressData,
-      id,
-      created_at: now,
-      updated_at: now
-    };
-
-    const filePath = path.join(DB_PATH, 'progress-grid view', `${id}.json`);
-    await fs.writeFile(filePath, JSON.stringify(newProgress, null, 2));
-    
-    return newProgress;
+    throw new Error('Progress creation not supported with GitHub API read-only access');
   }
 
   async updateProgress(id: string, updates: Partial<GitHubProgress>): Promise<GitHubProgress | null> {
-    const progress = await this.getAllProgress();
-    const existingProgress = progress.find(p => p.id === id);
-    if (!existingProgress) return null;
-
-    const updatedProgress = {
-      ...existingProgress,
-      ...updates,
-      updated_at: new Date().toISOString()
-    };
-
-    const filePath = path.join(DB_PATH, 'progress-grid view', `${id}.json`);
-    await fs.writeFile(filePath, JSON.stringify(updatedProgress, null, 2));
-    
-    return updatedProgress;
+    throw new Error('Progress updates not supported with GitHub API read-only access');
   }
 
   async deleteProgress(id: string): Promise<boolean> {
-    try {
-      const filePath = path.join(DB_PATH, 'progress-grid view', `${id}.json`);
-      await fs.unlink(filePath);
-      return true;
-    } catch (error) {
-      console.error(`Error deleting progress ${id}:`, error);
-      return false;
-    }
+    throw new Error('Progress deletion not supported with GitHub API read-only access');
   }
 }
 

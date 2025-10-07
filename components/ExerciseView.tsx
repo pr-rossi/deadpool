@@ -83,10 +83,10 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({
                                 </div>
                             </div>
                         </div>
-                        {exercise.fields.Video && exercise.fields.Video.trim() && (
+                        {exercise.fields.Video && exercise.fields.Video[0] && (
                             <button 
                                 className="watch-button"
-                                onClick={() => onVideoOpen(exercise.fields.Video!)}
+                                onClick={() => onVideoOpen(exercise.fields.Video![0].url)}
                             >
                                 <FontAwesomeIcon icon={faCirclePlay} />
                                 Watch example

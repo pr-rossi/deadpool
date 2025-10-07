@@ -1,5 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { githubDb } from '../../../src/services/githubDatabase';
+import Airtable from 'airtable';
+
+const apiKey = process.env.AIRTABLE_TOKEN;
+const baseId = process.env.AIRTABLE_BASE_ID;
+
+if (!apiKey || !baseId) {
+  throw new Error('Airtable API key or base ID is not set in environment variables');
+}
+
+const base = new Airtable({ apiKey }).base(baseId);
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,18 +26,30 @@ export default async function handler(
     }
 
     // First, get all exercises for the specified week
-    const exerciseRecords = await githubDb.getWorkoutsByWeek(weekNumber);
+    const exerciseRecords = await base('Workout')
+      .select({
+        filterByFormula: `{WorkoutWeek} = '${weekNumber}'`
+      })
+      .all();
+
     const exerciseIds = exerciseRecords.map(record => record.id);
 
     // Then get all progress records for the user that match these exercise IDs
-    const allProgressRecords = await githubDb.getProgressByUserId(userId);
-    const progressRecords = allProgressRecords.filter(record => 
-      exerciseIds.includes(record.exerciseId)
-    );
+    const progressRecords = await base('Progress')
+      .select({
+        filterByFormula: `AND({userId} = '${userId}', OR(${exerciseIds.map(id => `{exerciseId} = '${id}'`).join(',')}))`
+      })
+      .all();
 
-    // Delete the progress records
-    for (const record of progressRecords) {
-      await githubDb.deleteProgress(record.id);
+    // Delete the progress records in batches
+    if (progressRecords.length > 0) {
+      const recordIds = progressRecords.map(record => record.id);
+      
+      // Airtable only allows deleting 10 records at a time
+      for (let i = 0; i < recordIds.length; i += 10) {
+        const batch = recordIds.slice(i, i + 10);
+        await base('Progress').destroy(batch);
+      }
     }
 
     return res.status(200).json({ message: 'Week progress reset successfully' });

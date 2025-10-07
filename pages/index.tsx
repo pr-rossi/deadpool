@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
+import Airtable, { Table, Records, Record } from 'airtable';
 import { useRouter } from 'next/router';
-import { githubDb } from '../src/services/githubDatabase';
 import Header from '../components/Header';
 import WeekView from '../components/WeekView';
 import DayView from '../components/DayView';
@@ -35,9 +35,8 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            const userData = JSON.parse(storedUser);
-            setUser(userData);
-            loadUserProgress(userData.id);
+            setUser(JSON.parse(storedUser));
+            loadUserProgress(JSON.parse(storedUser).id);
         } else {
             router.push('/login');
         }
@@ -176,27 +175,9 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
     };
 
     const getNextExercise = () => {
-        // Sort group names in the same order as WorkoutView
-        const getGroupOrder = (groupName: string): number => {
-            if (groupName === 'Warm up') return 0;
-            if (groupName === 'Optional Core Circuit') return 999; // Last
-            
-            // Extract number from "Exercise 1", "Exercise 2", etc.
-            const match = groupName.match(/Exercise (\d+)/);
-            if (match) {
-                return parseInt(match[1], 10);
-            }
-            
-            // For any other groups, put them after exercises but before Optional Core Circuit
-            return 100;
-        };
-
-        const sortedGroupNames = Object.keys(groupedExercises).sort((a, b) => {
-            return getGroupOrder(a) - getGroupOrder(b);
-        });
-        
-        const currentIndex = sortedGroupNames.indexOf(selectedExercise!);
-        return currentIndex < sortedGroupNames.length - 1 ? sortedGroupNames[currentIndex + 1] : null;
+        const groupNames = Object.keys(groupedExercises);
+        const currentIndex = groupNames.indexOf(selectedExercise!);
+        return currentIndex < groupNames.length - 1 ? groupNames[currentIndex + 1] : null;
     };
 
     const handleNext = () => {
@@ -446,36 +427,39 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => {
-    try {
-        // Fetch all workout data from GitHub database
-        const workoutRecords = await githubDb.getAllWorkouts();
-        
-        // Convert to the expected format
-        const workoutData: Exercise[] = workoutRecords.map(record => ({
-            id: record.id,
-            fields: {
-                WorkoutWeek: record.WorkoutWeek,
-                WorkoutDay: record.WorkoutDay,
-                Group: record.Group,
-                Exercises: record.Exercises,
-                Rounds: record.Rounds,
-                Reps: record.Reps,
-                Rest: record.Rest,
-                Notes: record.Notes,
-                Video: record.Video,
-                id: record.id
-            }
-        }));
-
-        return {
-            props: {
-                workoutData
-            }
-        };
-    } catch (error) {
-        console.error("Error fetching data from GitHub database:", error);
-        throw new Error("Error fetching data from GitHub database");
+    const apiKey = process.env.AIRTABLE_TOKEN;
+    const baseId = process.env.AIRTABLE_BASE_ID;
+    if (!apiKey || !baseId) {
+        throw new Error("Airtable API key or base ID is not set in the environment variables");
     }
+
+    const base = new Airtable({ apiKey }).base(baseId);
+
+    const fetchAllRecords = async (table: Table<ExerciseRecord>): Promise<Exercise[]> => {
+        let allRecords: Exercise[] = [];
+        try {
+            await table.select({ view: "Grid view" }).eachPage((records: Records<ExerciseRecord>, fetchNextPage: () => void) => {
+                allRecords = allRecords.concat(records.map((record: Record<ExerciseRecord>) => ({
+                    id: record.id,
+                    fields: record.fields
+                })));
+                fetchNextPage();
+            });
+        } catch (error) {
+            console.error("Error fetching data from Airtable:", error);
+            throw new Error("Error fetching data from Airtable");
+        }
+        return allRecords;
+    };
+
+    const table = base('Workout');
+    const records = await fetchAllRecords(table);
+
+    return {
+        props: {
+            workoutData: records,
+        }
+    };
 };
 
 export default HomePage;

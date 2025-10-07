@@ -1,15 +1,17 @@
-// GitHub Database Types
-export interface ExerciseRecord {
-    WorkoutWeek: string;
-    WorkoutDay: string;
-    Group: string;
-    Exercises: string;
-    Rounds: string;
-    Reps: string;
-    Rest: string;
-    Notes: string;
-    Video: string;
-    id: string;
+import { FieldSet } from 'airtable';
+
+export interface ExerciseRecord extends FieldSet {
+    [key: string]: any;
+    WorkoutWeek?: string;
+    WorkoutDay?: string;
+    Group?: string;
+    Exercises?: string;
+    Rounds?: number;
+    Reps?: string;
+    Rest?: number;
+    Notes?: string;
+    id?: string;
+    Video?: { url: string }[];
 }
 
 export interface Exercise {
@@ -21,21 +23,12 @@ export interface User {
     id: string;
     email: string;
     name: string;
-    password?: string;
-    resetToken?: string;
-    resetTokenExpiry?: string;
-    created_at?: string;
-    updated_at?: string;
 }
 
 export interface Progress {
-    id: string;
-    userId: string;
     exerciseId: string;
-    completed: string; // "checked" or empty string
+    completed: boolean;
     lastUpdated: string;
-    created_at: string;
-    updated_at: string;
 }
 
 export interface HomePageProps {
