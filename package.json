@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.88.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -16,8 +17,11 @@
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^1.0.5",
     "@types/bcryptjs": "^2.4.6",
+    "@types/formidable": "^3.5.1",
     "@webflow/webflow-cli": "^1.6.9",
     "bcryptjs": "^3.0.2",
+    "dotenv": "^17.4.2",
+    "formidable": "^3.5.4",
     "lodash.groupby": "^4.6.0",
     "next": "^16.2.3",
     "react": "^18.2.0",
