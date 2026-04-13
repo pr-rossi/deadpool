@@ -3,7 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { WORKOUT_GENERATION_PROMPT } from '../../../lib/ai/system-prompts';
 
 export const config = {
-  maxDuration: 60,
+  maxDuration: 300,
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
