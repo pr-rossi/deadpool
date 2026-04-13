@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const stream = client.messages.stream({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 16384,
+      max_tokens: 32768,
       system: WORKOUT_GENERATION_PROMPT,
       messages: messages.map((m: any) => ({
         role: m.role,

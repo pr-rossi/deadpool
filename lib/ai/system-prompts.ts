@@ -84,7 +84,11 @@ Important rules for the exercise data:
 - reps: string — can be "8-10", "12-15", "20 Sec (e)", "30 Sec", "AMRAP", etc.
 - rest: string — "0" for no rest, "30 Sec", "1 Min", "2 Min", "2.5 Min", etc.
 
-Generate exercises for ALL weeks. If weeks repeat, still include them — the app needs every week's exercises in the database.
+CRITICAL — Keeping output compact:
+- For programs where weeks repeat the same exercises (just with progressive overload), ONLY output week 1's exercises and add a "repeat_for_weeks" field to the program JSON. Example: "repeat_for_weeks": [1,2,3,4,5,6] means week 1 exercises are duplicated for weeks 2-6.
+- If different weeks have different exercises (periodized programs), output each unique week but still use "repeat_for_weeks" where possible. Example: weeks 1-3 share exercises, weeks 4-6 share different exercises — output week 1 with "repeat_for_weeks": [1,2,3] and week 4 with "repeat_for_weeks": [4,5,6].
+- This is essential because the full exercise list for a 12-week program can exceed the output limit.
+- The app will expand these into individual week entries when saving.
 
 Be conversational and encouraging. Use fitness terminology appropriately for the user's level.`;
 
