@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import Airtable from 'airtable';
 import Link from 'next/link';
 
 interface LoginFormData {

@@ -1,14 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import Airtable from 'airtable';
-
-const apiKey = process.env.AIRTABLE_TOKEN;
-const baseId = process.env.AIRTABLE_BASE_ID;
-
-if (!apiKey || !baseId) {
-  throw new Error('Airtable API key or base ID is not set in environment variables');
-}
-
-const base = new Airtable({ apiKey }).base(baseId);
+import sql from '../../../lib/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,30 +13,12 @@ export default async function handler(
         return res.status(400).json({ message: 'User ID and Exercise ID are required' });
       }
 
-      // Create or update progress record
-      const records = await base('Progress')
-        .select({
-          filterByFormula: `AND({userId} = '${userId}', {exerciseId} = '${exerciseId}')`,
-        })
-        .firstPage();
-
-      if (records.length > 0) {
-        // Update existing record
-        await records[0].updateFields({
-          completed: completed,
-        });
-      } else {
-        // Create new record
-        await base('Progress').create([
-          {
-            fields: {
-              userId,
-              exerciseId,
-              completed,
-            },
-          },
-        ]);
-      }
+      await sql`
+        INSERT INTO progress (user_id, exercise_id, completed, last_updated)
+        VALUES (${userId}, ${exerciseId}, ${completed}, NOW())
+        ON CONFLICT (user_id, exercise_id)
+        DO UPDATE SET completed = ${completed}, last_updated = NOW()
+      `;
 
       return res.status(200).json({ message: 'Progress updated successfully' });
     } else if (req.method === 'GET') {
@@ -55,17 +28,14 @@ export default async function handler(
         return res.status(400).json({ message: 'User ID is required' });
       }
 
-      // Get all progress records for a user
-      const records = await base('Progress')
-        .select({
-          filterByFormula: `{userId} = '${userId}'`,
-        })
-        .all();
+      const rows = await sql`
+        SELECT exercise_id, completed, last_updated FROM progress WHERE user_id = ${userId}
+      `;
 
-      const progress = records.map(record => ({
-        exerciseId: record.fields.exerciseId,
-        completed: record.fields.completed,
-        lastUpdated: record._rawJson.lastModifiedTime, // Use Airtable's Last modified time
+      const progress = rows.map(row => ({
+        exerciseId: row.exercise_id,
+        completed: row.completed,
+        lastUpdated: row.last_updated,
       }));
 
       return res.status(200).json({ progress });
@@ -76,4 +46,4 @@ export default async function handler(
     console.error('Progress error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-} 
+}

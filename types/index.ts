@@ -1,6 +1,4 @@
-import { FieldSet } from 'airtable';
-
-export interface ExerciseRecord extends FieldSet {
+export interface ExerciseRecord {
     [key: string]: any;
     WorkoutWeek?: string;
     WorkoutDay?: string;
@@ -35,4 +33,4 @@ export interface HomePageProps {
     workoutData: Exercise[];
 }
 
-export type Step = 'landing' | 'week' | 'day' | 'workout' | 'exercise'; 
+export type Step = 'landing' | 'week' | 'day' | 'workout' | 'exercise';

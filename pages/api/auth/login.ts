@@ -1,14 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import Airtable from 'airtable';
-
-const apiKey = process.env.AIRTABLE_TOKEN;
-const baseId = process.env.AIRTABLE_BASE_ID;
-
-if (!apiKey || !baseId) {
-  throw new Error('Airtable API key or base ID is not set in environment variables');
-}
-
-const base = new Airtable({ apiKey }).base(baseId);
+import bcrypt from 'bcryptjs';
+import sql from '../../../lib/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,29 +17,37 @@ export default async function handler(
   }
 
   try {
-    // Query the Users table for a matching user
-    const records = await base('Users')
-      .select({
-        filterByFormula: `AND({email} = '${email}', {password} = '${password}')`,
-      })
-      .firstPage();
+    const rows = await sql`
+      SELECT airtable_id, name, email, password FROM users WHERE email = ${email}
+    `;
 
-    if (records.length === 0) {
+    if (rows.length === 0) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    const user = records[0];
-    
-    // Return user data (excluding password)
+    const user = rows[0];
+
+    // Handle both bcrypt hashed and plaintext passwords
+    let passwordMatch = false;
+    if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$')) {
+      passwordMatch = await bcrypt.compare(password, user.password);
+    } else {
+      passwordMatch = password === user.password;
+    }
+
+    if (!passwordMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
     return res.status(200).json({
       user: {
-        id: user.id,
-        email: user.fields.email,
-        name: user.fields.name,
+        id: user.airtable_id,
+        email: user.email,
+        name: user.name,
       },
     });
   } catch (error) {
     console.error('Login error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-} 
+}

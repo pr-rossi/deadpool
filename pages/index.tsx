@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
-import Airtable, { Table, Records, Record } from 'airtable';
+import sql from '../lib/db';
+import { mapWorkoutRow } from '../lib/mapWorkout';
 import { useRouter } from 'next/router';
 import Header from '../components/Header';
 import WeekView from '../components/WeekView';
@@ -427,39 +428,25 @@ const HomePage: NextPage<HomePageProps> = ({ workoutData }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async () => {
-    const apiKey = process.env.AIRTABLE_TOKEN;
-    const baseId = process.env.AIRTABLE_BASE_ID;
-    if (!apiKey || !baseId) {
-        throw new Error("Airtable API key or base ID is not set in the environment variables");
+    try {
+        const rows = await sql`
+            SELECT airtable_id, workout_week, workout_day, exercise_group,
+                   exercise_name, rounds, reps, rest, notes, video_url
+            FROM workouts
+            ORDER BY workout_week, workout_day, exercise_group
+        `;
+
+        const workoutData = rows.map(mapWorkoutRow);
+
+        return {
+            props: {
+                workoutData,
+            },
+        };
+    } catch (error) {
+        console.error('Error fetching workouts:', error);
+        throw new Error('Error fetching workouts from database');
     }
-
-    const base = new Airtable({ apiKey }).base(baseId);
-
-    const fetchAllRecords = async (table: Table<ExerciseRecord>): Promise<Exercise[]> => {
-        let allRecords: Exercise[] = [];
-        try {
-            await table.select({ view: "Grid view" }).eachPage((records: Records<ExerciseRecord>, fetchNextPage: () => void) => {
-                allRecords = allRecords.concat(records.map((record: Record<ExerciseRecord>) => ({
-                    id: record.id,
-                    fields: record.fields
-                })));
-                fetchNextPage();
-            });
-        } catch (error) {
-            console.error("Error fetching data from Airtable:", error);
-            throw new Error("Error fetching data from Airtable");
-        }
-        return allRecords;
-    };
-
-    const table = base('Workout');
-    const records = await fetchAllRecords(table);
-
-    return {
-        props: {
-            workoutData: records,
-        }
-    };
 };
 
 export default HomePage;

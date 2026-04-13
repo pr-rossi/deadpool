@@ -1,14 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import Airtable from 'airtable';
-
-const apiKey = process.env.AIRTABLE_TOKEN;
-const baseId = process.env.AIRTABLE_BASE_ID;
-
-if (!apiKey || !baseId) {
-  throw new Error('Missing Airtable configuration');
-}
-
-const base = new Airtable({ apiKey }).base(baseId);
+import sql from '../../../lib/db';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -22,14 +13,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: 'Reset token is required' });
     }
 
-    // Find user with matching reset token
-    const records = await base('Users')
-      .select({
-        filterByFormula: `AND({resetToken} = '${token}', {resetTokenExpiry} > '${new Date().toISOString()}')`,
-      })
-      .firstPage();
+    // Find user with matching reset token that hasn't expired
+    const rows = await sql`
+      SELECT airtable_id FROM users
+      WHERE reset_token = ${token} AND reset_token_expiry > NOW()
+    `;
 
-    if (records.length === 0) {
+    if (rows.length === 0) {
       return res.status(400).json({ message: 'Invalid or expired reset token' });
     }
 
@@ -38,4 +28,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error('Error validating reset token:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-} 
+}
