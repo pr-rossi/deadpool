@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: 'userId is required' });
       }
 
-      // Get user's programs + the default program
+      // Get user's programs + default programs + community-shared programs
       const programs = await sql`
         SELECT p.*,
           CASE
@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             ELSE (SELECT COUNT(*) FROM program_exercises WHERE program_id = p.id)
           END as exercise_count
         FROM programs p
-        WHERE p.user_id = ${userId} OR p.user_id = 'default'
+        WHERE p.user_id = ${userId} OR p.user_id = 'default' OR p.source = 'community'
         ORDER BY p.created_at ASC
       `;
 

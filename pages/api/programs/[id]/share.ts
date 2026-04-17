@@ -25,8 +25,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(403).json({ message: 'You can only share programs you created' });
     }
 
-    // Set source to 'community' and user_id to 'default' so all users can see it
-    await sql`UPDATE programs SET source = 'default', user_id = 'default' WHERE id = ${id as string}`;
+    // Mark as community — keeps user_id so creator retains ownership
+    await sql`UPDATE programs SET source = 'community' WHERE id = ${id as string}`;
 
     return res.status(200).json({ message: 'Program shared with community' });
   } catch (error) {
