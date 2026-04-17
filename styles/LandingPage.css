@@ -95,10 +95,10 @@
     justify-content: center;
     width: 48px;
     height: 48px;
-    background-color: rgba(212, 255, 153, 0.1);
+    background-color: rgba(0, 212, 255, 0.1);
     border-radius: 12px;
     font-size: 1.5rem;
-    color: rgba(212, 255, 153, 1);
+    color: rgba(0, 212, 255, 1);
     flex-shrink: 0;
 }
 
@@ -155,7 +155,7 @@
 }
 
 .plan-metric svg {
-    color: rgba(212, 255, 153, 1);
+    color: rgba(0, 212, 255, 1);
     font-size: 1rem;
 }
 
@@ -168,21 +168,21 @@
 .progress-bar {
     width: 100%;
     height: 4px;
-    background-color: rgba(212, 255, 153, 0.1);
+    background-color: rgba(0, 212, 255, 0.1);
     border-radius: 2px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background-color: rgba(212, 255, 153, 1);
+    background-color: rgba(0, 212, 255, 1);
     border-radius: 2px;
     transition: width 0.3s ease;
 }
 
 .progress-text {
     font-size: 0.9rem;
-    color: rgba(212, 255, 153, 1);
+    color: rgba(0, 212, 255, 1);
 }
 
 .progress-footer {

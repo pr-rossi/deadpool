@@ -287,11 +287,11 @@ body {
 }
 
 .list-item-v2.completed .check-icon {
-  color: rgba(212, 255, 153, 1);
+  color: rgba(0, 212, 255, 1);
 }
 
 .list-item-v2.completed .chevron-v2 {
-  color: rgba(212, 255, 153, 1);
+  color: rgba(0, 212, 255, 1);
 }
 
 .complete-button {
@@ -309,7 +309,7 @@ body {
 }
 
 .complete-button.completed {
-  background: rgba(212, 255, 153, 1);
+  background: rgba(0, 212, 255, 1);
   color: #181B1F;
 }
 

@@ -53,9 +53,9 @@
 }
 
 .complete-button.completed {
-    background-color: rgba(212, 255, 153, 0.1);
-    border-color: rgba(212, 255, 153, 0.2);
-    color: rgba(212, 255, 153, 1);
+    background-color: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.2);
+    color: rgba(0, 212, 255, 1);
 }
 
 .complete-text {
@@ -83,7 +83,7 @@
     background-color: #282D32;
     border-radius: 10px;
     font-size: 1rem;
-    color: rgba(212, 255, 153, 1);
+    color: rgba(0, 212, 255, 1);
 }
 
 .metric-info {
@@ -114,7 +114,7 @@
     background-color: #282D32;
     border: none;
     border-radius: 10px;
-    color: rgba(212, 255, 153, 1);
+    color: rgba(0, 212, 255, 1);
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -123,7 +123,7 @@
 
 @media (hover: hover) {
     .watch-button:hover {
-        background-color: rgba(212, 255, 153, 1);
+        background-color: rgba(0, 212, 255, 1);
         color: #181818;
     }
 }

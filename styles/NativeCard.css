@@ -58,8 +58,8 @@
   border-color: var(--color-primary);
   box-shadow: 
     0 0 0 1px var(--color-primary),
-    0 4px 6px -1px rgba(212, 255, 153, 0.1),
-    0 2px 4px -1px rgba(212, 255, 153, 0.06);
+    0 4px 6px -1px rgba(0, 212, 255, 0.1),
+    0 2px 4px -1px rgba(0, 212, 255, 0.06);
 }
 
 .native-card.disabled {

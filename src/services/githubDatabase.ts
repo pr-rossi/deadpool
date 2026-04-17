@@ -47,7 +47,7 @@ class GitHubDatabase {
         headers: {
           'Authorization': `token ${this.token}`,
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'deadpool-app'
+          'User-Agent': 'rossifit-app'
         }
       });
 
@@ -65,7 +65,7 @@ class GitHubDatabase {
               headers: {
                 'Authorization': `token ${this.token}`,
                 'Accept': 'application/vnd.github.v3+json',
-                'User-Agent': 'deadpool-app'
+                'User-Agent': 'rossifit-app'
               }
             });
             

@@ -17,7 +17,7 @@
 }
 
 .alert-success {
-    border-left: 4px solid #D4FF99;
+    border-left: 4px solid #00D4FF;
 }
 
 .alert-error {
@@ -33,7 +33,7 @@
 }
 
 .alert-success .alert-icon {
-    color: #D4FF99;
+    color: #00D4FF;
 }
 
 .alert-error .alert-icon {

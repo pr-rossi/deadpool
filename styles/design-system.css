@@ -1,10 +1,10 @@
 /* Design System - CSS Variables */
 :root {
   /* Color Palette - Primary */
-  --color-primary: #D4FF99;
-  --color-primary-dark: #B8E582;
-  --color-primary-light: #E6FFB8;
-  --color-primary-rgb: 212, 255, 153;
+  --color-primary: #00D4FF;
+  --color-primary-dark: #00B0D4;
+  --color-primary-light: #66E5FF;
+  --color-primary-rgb: 0, 212, 255;
 
   /* Color Palette - Neutral */
   --color-background: #0A0A0B;

@@ -19,13 +19,13 @@ export const ResetPasswordEmail = ({
 }: ResetPasswordEmailProps) => {
   return (
     <Html>
-      <Preview>Reset your password for Deadpool</Preview>
+      <Preview>Reset your password for RossiFit</Preview>
       <Body style={main}>
         <Container style={container}>
           <Text style={heading}>Reset Your Password</Text>
           <Text style={paragraph}>Hi {userName},</Text>
           <Text style={paragraph}>
-            We received a request to reset your password for your Deadpool account.
+            We received a request to reset your password for your RossiFit account.
             Click the button below to create a new password:
           </Text>
           <Link href={resetLink} style={button}>
@@ -40,7 +40,7 @@ export const ResetPasswordEmail = ({
           </Text>
           <Text style={paragraph}>
             Best regards,<br />
-            The Deadpool Team
+            The RossiFit Team
           </Text>
         </Container>
       </Body>
